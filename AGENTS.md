@@ -41,6 +41,26 @@ Write content in Markdown here.
 
 Front-matter fields `categories` / `tags` feed the menu's category/tag/archive pages.
 
+### Images in posts (post_asset_folder is enabled)
+
+`post_asset_folder: true` is set, so `hexo new post` also creates a folder
+`source/_posts/<title>/` next to the Markdown file. Put images there and
+reference them with a relative path:
+
+```markdown
+![caption](image.png)
+```
+
+or with the Hexo tag:
+
+```markdown
+{% asset_img image.png caption %}
+```
+
+Both keep images bundled with the post and backed up in `main`. Do NOT use
+absolute `/images/...` paths for post images unless the file lives in
+`source/images/`. External URLs are allowed but not recommended for durability.
+
 ## How to publish
 
 ```bash
