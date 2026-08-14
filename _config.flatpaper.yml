@@ -33,7 +33,7 @@ nav:
           icon: github
         - name: 小红书
           link: https://xhslink.cn/m/4bcFlkfMqct
-          icon: https://xhslink.cn/favicon.ico
+          icon: https://zhootoo.github.io/images/xiaohongshu.svg
     - title: 站内
       item:
         - name: 首页
