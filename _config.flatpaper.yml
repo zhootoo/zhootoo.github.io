@@ -54,8 +54,8 @@ background:
   style: default
 
 profile:
-  role: 日常记录
-  bio: 介绍一下自己 — 一两句话，写写你想被别人记住的部分。
+  role: Software Engineer
+  bio: 这是我的个人博客，用于记录技术学习、生活点滴与各种有趣的内容。
   # 头像图片路径（站点根的 source/ 目录下）。留空则使用 CSS 绘制的默认头像。
   avatar: /images/avatar.jpg
   # 头像图片形状：square（默认，原始方形）或 circle（应用圆形遮罩）
