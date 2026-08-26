@@ -1,26 +1,34 @@
 <!doctype html>
 
-<html lang="zh-CN">
+<html lang="zh-CN" data-fancybox-enabled="1">
 <head>
   <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#f7f3e9" data-flatpaper-theme-color>
 
-<title>归档：2026 | zhootoo</title>
-<meta name="description" content="归档：2026收录 3 篇文章，包括PyTorch的个人理解、1-CPU缓存行和伪共享、Hello World。">
-<meta property="og:type" content="website">
-<meta property="og:title" content="归档：2026 | zhootoo">
-<meta property="og:url" content="https://zhootoo.github.io/archives/2026/">
+<title>PyTorch的个人理解 | zhootoo</title>
+<meta name="description" content="接触 PyTorch 也有一段时间了，从最初的”照着教程敲代码”，到后来能比较顺畅地搭模型、调训练循环。这篇文章不是官方文档的翻译，而是我站在使用者角度，对 PyTorch 底层设计的一些个人理解，希望能帮到同样在入门的朋友。 一句话概括 PyTorch PyTorch 就是一个带自动微分的 NumPy，外加一个模块化的神经网络组件库。 如果你能理解这句话...">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PyTorch的个人理解 | zhootoo">
+<meta property="og:url" content="https://zhootoo.github.io/2026/08/26/PyTorch%E7%9A%84%E4%B8%AA%E4%BA%BA%E7%90%86%E8%A7%A3/">
 <meta property="og:site_name" content="zhootoo">
-<meta property="og:description" content="归档：2026收录 3 篇文章，包括PyTorch的个人理解、1-CPU缓存行和伪共享、Hello World。">
+<meta property="og:description" content="接触 PyTorch 也有一段时间了，从最初的”照着教程敲代码”，到后来能比较顺畅地搭模型、调训练循环。这篇文章不是官方文档的翻译，而是我站在使用者角度，对 PyTorch 底层设计的一些个人理解，希望能帮到同样在入门的朋友。 一句话概括 PyTorch PyTorch 就是一个带自动微分的 NumPy，外加一个模块化的神经网络组件库。 如果你能理解这句话...">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-08-25T23:46:36.000Z">
+<meta property="article:modified_time" content="2026-08-25T23:47:15.172Z">
 <meta property="article:author" content="zhootoo">
+<meta property="article:tag" content="PyTorch">
+<meta property="article:tag" content="张量">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="深度学习">
+<meta property="article:tag" content="神经网络">
+<meta property="article:tag" content="自动微分">
 <meta name="twitter:card" content="summary">
-<link rel="canonical" href="https://zhootoo.github.io/archives/2026/">
+<link rel="canonical" href="https://zhootoo.github.io/2026/08/26/PyTorch%E7%9A%84%E4%B8%AA%E4%BA%BA%E7%90%86%E8%A7%A3/">
 
 <link rel="icon" href="/images/favicon.png" type="image/png">
 
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","headline":"归档：2026 | zhootoo","name":"归档：2026 | zhootoo","description":"归档：2026收录 3 篇文章，包括PyTorch的个人理解、1-CPU缓存行和伪共享、Hello World。","url":"https://zhootoo.github.io/archives/2026/","inLanguage":"zh-CN","isPartOf":{"@type":"WebSite","name":"zhootoo","url":"https://zhootoo.github.io/"},"about":"归档：2026"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"PyTorch的个人理解","name":"PyTorch的个人理解 | zhootoo","description":"接触 PyTorch 也有一段时间了，从最初的”照着教程敲代码”，到后来能比较顺畅地搭模型、调训练循环。这篇文章不是官方文档的翻译，而是我站在使用者角度，对 PyTorch 底层设计的一些个人理解，希望能帮到同样在入门的朋友。 一句话概括 PyTorch PyTorch 就是一个带自动微分的 NumPy，外加一个模块化的神经网络组件库。 如果你能理解这句话...","url":"https://zhootoo.github.io/2026/08/26/PyTorch%E7%9A%84%E4%B8%AA%E4%BA%BA%E7%90%86%E8%A7%A3/","inLanguage":"zh-CN","isPartOf":{"@type":"WebSite","name":"zhootoo","url":"https://zhootoo.github.io/"},"mainEntityOfPage":"https://zhootoo.github.io/2026/08/26/PyTorch%E7%9A%84%E4%B8%AA%E4%BA%BA%E7%90%86%E8%A7%A3/","datePublished":"2026-08-25T23:46:36.000Z","dateModified":"2026-08-25T23:47:15.172Z","author":{"@type":"Person","name":"zhootoo"},"publisher":{"@type":"Organization","name":"zhootoo"},"keywords":"PyTorch, 深度学习, 机器学习, 神经网络, 张量, 自动微分"}</script>
 
 <script>
   (function () {
@@ -56,12 +64,15 @@
   
 
   
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css">
+<script defer src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+
 
   
 <meta name="generator" content="Hexo 8.1.2"></head>
 
 <body
-  class="is-list tag-style-tape bg-style-default"
+  class="is-post tag-style-tape bg-style-default"
   data-default-accent="green"
   data-code-theme="simple"
   data-note-style="sticky"
@@ -170,7 +181,7 @@
       
     
       
-        <div class="site-nav-item has-children active">
+        <div class="site-nav-item has-children">
           <button class="site-nav-link site-nav-parent" type="button" aria-haspopup="true" aria-expanded="false">
             
 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-folder"></use></svg>
@@ -193,7 +204,7 @@
                 <span>标签</span>
               </a>
             
-              <a role="menuitem" class="active" href="/archives/">
+              <a role="menuitem" class="" href="/archives/">
                 
 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-archive flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-archive"></use></svg>
 
@@ -255,7 +266,7 @@
 
 
   
-  <main class="paper-shell ">
+  <main class="paper-shell paper-shell--article">
     
 
 <aside id="paper-sidebar-drawer" class="paper-sidebar paper-sidebar--right" aria-label="侧边栏">
@@ -312,8 +323,8 @@
         
       
         
-          <div class="drawer-nav-group is-open active">
-            <button class="drawer-nav-parent" type="button" aria-expanded="true">
+          <div class="drawer-nav-group">
+            <button class="drawer-nav-parent" type="button" aria-expanded="false">
               
 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-folder"></use></svg>
 
@@ -335,7 +346,7 @@
                   <span>标签</span>
                 </a>
               
-                <a class="active" href="/archives/">
+                <a class="" href="/archives/">
                   
 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-archive flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-archive"></use></svg>
 
@@ -442,62 +453,28 @@
   
 
   
-    <section class="side-card categories-card">
-      <h2>
-<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-folder"></use></svg>
-分类</h2>
-      
-        <a href="/categories/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">
-          <span class="dot dot-0"></span>
-          <strong>性能优化</strong>
-          <em>1</em>
-        </a>
-      
-        <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">
-          <span class="dot dot-1"></span>
-          <strong>深度学习</strong>
-          <em>1</em>
-        </a>
-      
-    </section>
+    <div class="post-sticky-stack">
+      <section class="side-card toc-card">
+        <header class="toc-card__head">
+          <h2>
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-table-of-contents flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-table-of-contents"></use></svg>
+文章目录</h2>
+          <button type="button" class="toc-toggle-all" data-action="toggle-toc" aria-pressed="false" aria-label="展开全部目录" title="展开全部目录">
+            
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-chevron-down"></use></svg>
 
-    <section class="side-card tag-card">
-      <header class="tag-card__head">
-        <h2>
-<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-flame flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-flame"></use></svg>
-热门标签</h2>
-        <a class="tag-card__more" href="/tags/">
-          <span>查看全部</span>
+          </button>
+        </header>
+        <div class="toc-content">
           
-<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-arrow-right"></use></svg>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E6%A6%82%E6%8B%AC-PyTorch"><span class="toc-text">一句话概括 PyTorch</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E4%B8%80%EF%BC%9A%E5%BC%A0%E9%87%8F%EF%BC%88Tensor%EF%BC%89"><span class="toc-text">核心概念一：张量（Tensor）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E4%BA%8C%EF%BC%9A%E8%87%AA%E5%8A%A8%E5%BE%AE%E5%88%86%EF%BC%88Autograd%EF%BC%89"><span class="toc-text">核心概念二：自动微分（Autograd）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E5%9B%BE%E7%9A%84%E9%87%8A%E6%94%BE"><span class="toc-text">计算图的释放</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E4%B8%89%EF%BC%9A%E5%8A%A8%E6%80%81%E8%AE%A1%E7%AE%97%E5%9B%BE"><span class="toc-text">核心概念三：动态计算图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E5%9B%9B%EF%BC%9Ann-Module-%E6%A8%A1%E5%9D%97%E5%8C%96"><span class="toc-text">核心概念四：nn.Module 模块化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E5%AE%8C%E6%95%B4%E7%9A%84%E8%AE%AD%E7%BB%83%E5%BE%AA%E7%8E%AF"><span class="toc-text">一个完整的训练循环</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93"><span class="toc-text">个人总结</span></a></li></ol>
+          
+        </div>
+      </section>
+      
 
-        </a>
-      </header>
-      <div class="tag-cloud">
-        
-        
-          <a class="tag-chip tag-chip-0" href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">性能优化</a>
-        
-          <a class="tag-chip tag-chip-1" href="/tags/CPU/">CPU</a>
-        
-          <a class="tag-chip tag-chip-2" href="/tags/%E7%BC%93%E5%AD%98/">缓存</a>
-        
-          <a class="tag-chip tag-chip-3" href="/tags/%E5%B9%B6%E5%8F%91/">并发</a>
-        
-          <a class="tag-chip tag-chip-4" href="/tags/PyTorch/">PyTorch</a>
-        
-          <a class="tag-chip tag-chip-5" href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a>
-        
-          <a class="tag-chip tag-chip-0" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a>
-        
-          <a class="tag-chip tag-chip-1" href="/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/">神经网络</a>
-        
-          <a class="tag-chip tag-chip-2" href="/tags/%E5%BC%A0%E9%87%8F/">张量</a>
-        
-          <a class="tag-chip tag-chip-3" href="/tags/%E8%87%AA%E5%8A%A8%E5%BE%AE%E5%88%86/">自动微分</a>
-        
-      </div>
-    </section>
+
+    </div>
   
 
   
@@ -506,33 +483,142 @@
 
     <section class="paper-main">
       
-<section class="archive-paper">
-  
-    <h1>归档</h1>
-  
-  <div class="archive-list">
-    
-      <a class="archive-item" href="/2026/08/26/PyTorch%E7%9A%84%E4%B8%AA%E4%BA%BA%E7%90%86%E8%A7%A3/">
-        <span>2026-08-26</span>
-        <strong>PyTorch的个人理解</strong>
-        <em></em>
-      </a>
-    
-      <a class="archive-item" href="/2026/08/15/1-CPU%E7%BC%93%E5%AD%98%E8%A1%8C%E5%92%8C%E4%BC%AA%E5%85%B1%E4%BA%AB/">
-        <span>2026-08-15</span>
-        <strong>1-CPU缓存行和伪共享</strong>
-        <em></em>
-      </a>
-    
-      <a class="archive-item" href="/2026/08/14/hello-world/">
-        <span>2026-08-14</span>
-        <strong>Hello World</strong>
-        <em></em>
-      </a>
-    
-  </div>
-</section>
 
+<div class="article-tape-wrap">
+<span class="tape tape--top-right" aria-hidden="true"></span>
+<article class="article-paper">
+  
+  <header class="article-header">
+    
+      <a class="label-pill" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">
+        
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-folder"></use></svg>
+
+        深度学习
+      </a>
+    
+    <h1>PyTorch的个人理解</h1>
+    <div class="meta-line meta-line--article">
+      <span class="meta-date">
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-calendar"></use></svg>
+2026-08-26</span>
+      
+        <span class="meta-tags">
+          
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tag flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-tag"></use></svg>
+
+          <a class="meta-tag-link" href="/tags/PyTorch/">#PyTorch</a><a class="meta-tag-link" href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">#深度学习</a><a class="meta-tag-link" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">#机器学习</a><a class="meta-tag-link" href="/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/">#神经网络</a><a class="meta-tag-link" href="/tags/%E5%BC%A0%E9%87%8F/">#张量</a><a class="meta-tag-link" href="/tags/%E8%87%AA%E5%8A%A8%E5%BE%AE%E5%88%86/">#自动微分</a>
+        </span>
+      
+    </div>
+  </header>
+
+  
+
+
+  <div class="article-content">
+    <p>接触 PyTorch 也有一段时间了，从最初的”照着教程敲代码”，到后来能比较顺畅地搭模型、调训练循环。这篇文章不是官方文档的翻译，而是我站在使用者角度，对 PyTorch 底层设计的一些个人理解，希望能帮到同样在入门的朋友。</p>
+<h2 id="一句话概括-PyTorch"><a href="#一句话概括-PyTorch" class="headerlink" title="一句话概括 PyTorch"></a>一句话概括 PyTorch</h2><blockquote>
+<p><strong>PyTorch 就是一个带自动微分的 NumPy，外加一个模块化的神经网络组件库。</strong></p>
+</blockquote>
+<p>如果你能理解这句话，PyTorch 的大半就掌握了。剩下的是各种 API 的熟练度问题。</p>
+<h2 id="核心概念一：张量（Tensor）"><a href="#核心概念一：张量（Tensor）" class="headerlink" title="核心概念一：张量（Tensor）"></a>核心概念一：张量（Tensor）</h2><p>Tensor 本质就是 n 维数组，和 NumPy 的 <code>ndarray</code> 几乎一一对应，但它多了两个关键能力：<strong>GPU 加速</strong>和<strong>自动微分</strong>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"></span><br><span class="line"><span class="comment"># 和 NumPy 几乎一样的创建方式</span></span><br><span class="line">x = torch.zeros(<span class="number">3</span>, <span class="number">4</span>)          <span class="comment"># 全 0</span></span><br><span class="line">y = torch.randn(<span class="number">3</span>, <span class="number">4</span>)          <span class="comment"># 标准正态分布随机数</span></span><br><span class="line">z = torch.arange(<span class="number">10</span>)           <span class="comment"># 0~9</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 与 NumPy 互转</span></span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line">arr = x.numpy()                <span class="comment"># Tensor -&gt; ndarray</span></span><br><span class="line">x2 = torch.from_numpy(arr)     <span class="comment"># ndarray -&gt; Tensor</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># GPU 加速</span></span><br><span class="line"><span class="keyword">if</span> torch.cuda.is_available():</span><br><span class="line">    x = x.cuda()               <span class="comment"># 一个 .cuda() 就搬到显存</span></span><br></pre></td></tr></table></figure>
+
+<p>我的个人感受是：<strong>凡是 NumPy 能做的，Tensor 基本都能做</strong>，而且语法几乎一样。所以从 NumPy 迁移过来的学习成本极低。</p>
+<h2 id="核心概念二：自动微分（Autograd）"><a href="#核心概念二：自动微分（Autograd）" class="headerlink" title="核心概念二：自动微分（Autograd）"></a>核心概念二：自动微分（Autograd）</h2><p>这是 PyTorch 的灵魂。自动微分的意思是：<strong>你只需要定义前向计算过程，PyTorch 会自动帮你把梯度算出来。</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">x = torch.tensor([<span class="number">2.0</span>], requires_grad=<span class="literal">True</span>)  <span class="comment"># 开启梯度追踪</span></span><br><span class="line">y = x ** <span class="number">2</span> + <span class="number">3</span> * x                           <span class="comment"># y = x^2 + 3x</span></span><br><span class="line">y.backward()                                 <span class="comment"># 反向传播</span></span><br><span class="line"><span class="built_in">print</span>(x.grad)                                <span class="comment"># tensor([7.])，即 2x + 3 = 7</span></span><br></pre></td></tr></table></figure>
+
+<p>关键在于 <code>requires_grad=True</code>。设置之后，PyTorch 会在<strong>前向计算的过程中偷偷记录计算图</strong>，等 <code>backward()</code> 时再从后往前把每个中间变量的梯度算出来。</p>
+<p>我最初一直困惑的是：梯度到底是怎么”自动”算出来的？后来想明白了，其实就是<strong>链式法则</strong>。PyTorch 把 <code>y = x ** 2 + 3 * x</code> 拆成一张图：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x -&gt; x**2 -&gt; + -&gt; y</span><br><span class="line">  -&gt; 3*x  -&gt;</span><br></pre></td></tr></table></figure>
+
+<p><code>backward()</code> 就是沿着这张图反向走一遍，把 <code>dy/dx</code> 逐层传回去。所谓的”深度学习框架”，本质就是替你维护了这张图和链式求导。</p>
+<h3 id="计算图的释放"><a href="#计算图的释放" class="headerlink" title="计算图的释放"></a>计算图的释放</h3><p>有一个细节值得注意：<strong>每次 <code>backward()</code> 之后，计算图会被释放</strong>，所以 <code>loss.backward()</code> 只能在训练循环里调用一次。如果需要多次反向（比如某些 GAN 的写法），要传 <code>retain_graph=True</code>。这个细节常常是新手报错 <code>RuntimeError: Trying to backward through the graph a second time</code> 的根源。</p>
+<h2 id="核心概念三：动态计算图"><a href="#核心概念三：动态计算图" class="headerlink" title="核心概念三：动态计算图"></a>核心概念三：动态计算图</h2><p>这是 PyTorch 区别于老式框架（如 TensorFlow 1.x 的静态图）最重要的设计。</p>
+<ul>
+<li><strong>静态图</strong>：先定义好完整的计算图，再喂数据执行。优点是可以预先优化，缺点是图的定义和调试都很痛苦，Python 的 <code>if</code>、<code>for</code> 都得想办法塞进图 API 里。</li>
+<li><strong>动态图</strong>：<strong>执行即构建</strong>。每跑一次前向，图就现场搭一次。写模型就跟写普通 Python 代码一样，<code>if</code>、<code>for</code>、函数调用随手就用。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x, use_dropout=<span class="literal">True</span></span>):</span><br><span class="line">    x = <span class="variable language_">self</span>.fc1(x)</span><br><span class="line">    x = torch.relu(x)</span><br><span class="line">    <span class="keyword">if</span> use_dropout:            <span class="comment"># 动态图：Python 控制流直接可用</span></span><br><span class="line">        x = torch.dropout(x, p=<span class="number">0.5</span>, train=<span class="variable language_">self</span>.training)</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">self</span>.fc2(x)</span><br></pre></td></tr></table></figure>
+
+<p>我的个人理解：动态图的本质是<strong>让”搭网络”这件事回归到”写程序”</strong>，框架不再强迫你用一套声明式 DSL。这对研究、调试、快速迭代极其友好——想加一个分支？写个 <code>if</code> 就完了。</p>
+<h2 id="核心概念四：nn-Module-模块化"><a href="#核心概念四：nn-Module-模块化" class="headerlink" title="核心概念四：nn.Module 模块化"></a>核心概念四：nn.Module 模块化</h2><p><code>nn.Module</code> 是搭模型的”积木”基类。任何网络都可以看作模块的嵌套组合。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MLP</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        <span class="variable language_">self</span>.fc1 = nn.Linear(<span class="number">784</span>, <span class="number">128</span>)</span><br><span class="line">        <span class="variable language_">self</span>.fc2 = nn.Linear(<span class="number">128</span>, <span class="number">10</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        x = torch.relu(<span class="variable language_">self</span>.fc1(x))</span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">self</span>.fc2(x)</span><br></pre></td></tr></table></figure>
+
+<p>我理解 <code>nn.Module</code> 真正做的事有三件：</p>
+<ol>
+<li><strong>自动注册子模块和参数</strong>：<code>self.fc1 = nn.Linear(...)</code> 一旦赋值，<code>model.parameters()</code> 就会自动收集到 <code>fc1</code> 的权重，不用手动管理。</li>
+<li><strong>统一前向接口</strong>：<code>forward</code> 定义后，<code>model(x)</code> 自动帮你处理一些细节（比如切换训练&#x2F;评估模式）。</li>
+<li><strong>管理状态</strong>：<code>.train()</code> &#x2F; <code>.eval()</code>、<code>.to(device)</code>、<code>.state_dict()</code> 等一整套生命周期操作。</li>
+</ol>
+<h2 id="一个完整的训练循环"><a href="#一个完整的训练循环" class="headerlink" title="一个完整的训练循环"></a>一个完整的训练循环</h2><p>训练的本质其实非常简单，就五步，每步一行：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">optimizer = torch.optim.SGD(model.parameters(), lr=<span class="number">0.01</span>)</span><br><span class="line">loss_fn = nn.CrossEntropyLoss()</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> data, target <span class="keyword">in</span> dataloader:</span><br><span class="line">    optimizer.zero_grad()     <span class="comment"># 1. 清空上一步的梯度</span></span><br><span class="line">    output = model(data)      <span class="comment"># 2. 前向传播</span></span><br><span class="line">    loss = loss_fn(output, target)  <span class="comment"># 3. 计算损失</span></span><br><span class="line">    loss.backward()           <span class="comment"># 4. 反向传播，算出梯度</span></span><br><span class="line">    optimizer.step()          <span class="comment"># 5. 更新参数</span></span><br></pre></td></tr></table></figure>
+
+<p>这五行代码我建议<strong>手写十遍</strong>。深度学习看似高大上，落到训练这一层，就是”前向算损失，反向算梯度，沿着梯度反方向走一步”。</p>
+<p>其中 <code>optimizer.zero_grad()</code> 是最容易忽略的一步——PyTorch 的梯度是<strong>累加</strong>的，不清零的话每轮梯度会叠加，训练直接崩掉。这也是个人踩过的坑。</p>
+<h2 id="个人总结"><a href="#个人总结" class="headerlink" title="个人总结"></a>个人总结</h2><p>最后说说我对 PyTorch 的整体观感：</p>
+<ol>
+<li><strong>它首先是个科学的玩具，其次才是工业工具。</strong> 动态图 + Python 生态让它成为研究首选，部署上虽有 TorchScript 等方案，但历史包袱比某些框架重。</li>
+<li><strong>理解自动微分 &gt; 记住 API。</strong> 只要想清楚”计算图 + 链式法则”，遇到任何自定义损失、自定义层的需求，心里就有底。</li>
+<li><strong>先会套模板，再拆模板。</strong> 训练循环、<code>nn.Module</code> 的写法都是高度模板化的，先跑通，再去抠每一行的原理，是效率最高的学习路径。</li>
+</ol>
+<p>一句话收尾：<strong>PyTorch 让”从想法到训练出模型”的路径变得足够短，剩下的，就是你的数据和想法了。</strong></p>
+
+  </div>
+
+  <footer class="article-reactions">
+    <div class="reaction-group">
+      <button type="button" class="reaction reaction--comment" aria-label="跳转到评论区" data-action="scroll-to-comments">
+        
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-message-circle"></use></svg>
+
+      </button>
+      <span class="reaction-label">评论</span>
+      
+    </div>
+    <div class="reaction-group reaction-group--right">
+      
+      <button type="button" class="reaction reaction--share" aria-label="分享" data-action="share">
+        
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-share-2 flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-share-2"></use></svg>
+
+      </button>
+      <span class="reaction-label">分享</span>
+    </div>
+  </footer>
+
+  
+
+
+  <nav class="article-actions">
+    
+      <span class="article-action article-action--prev is-disabled" aria-disabled="true">
+        
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-arrow-left"></use></svg>
+
+        <span class="action-label">上一篇</span>
+        <span class="action-title">没有更早的文章了</span>
+      </span>
+    
+    
+      <a class="article-action article-action--next" href="/2026/08/15/1-CPU%E7%BC%93%E5%AD%98%E8%A1%8C%E5%92%8C%E4%BC%AA%E5%85%B1%E4%BA%AB/">
+        <span class="action-label">下一篇</span>
+        <span class="action-title">1-CPU缓存行和伪共享</span>
+        
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-arrow-right"></use></svg>
+
+      </a>
+    
+  </nav>
+</article>
+</div>
+
+<button type="button" class="back-to-top" data-action="scroll-to-top" aria-label="返回顶部" hidden>
+  
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-arrow-up"></use></svg>
+
+</button>
 
 
 
@@ -540,44 +626,6 @@
 
 
     </section>
-    
-      <aside class="paper-sidebar paper-sidebar--left">
-  
-  
-
-  <section class="side-card recent-card" data-random-posts-limit="5" data-random-posts-url="/flatpaper-random-posts.json" data-random-posts-current="/archives/2026/index.html">
-    <h2>
-<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shuffle flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-shuffle"></use></svg>
-随机文章</h2>
-    <ul class="recent-list js-random-posts">
-      
-        <li>
-          <a class="recent-item" href="/2026/08/26/PyTorch%E7%9A%84%E4%B8%AA%E4%BA%BA%E7%90%86%E8%A7%A3/">
-            <strong>PyTorch的个人理解</strong>
-            <em>2026-08-26</em>
-          </a>
-        </li>
-      
-        <li>
-          <a class="recent-item" href="/2026/08/15/1-CPU%E7%BC%93%E5%AD%98%E8%A1%8C%E5%92%8C%E4%BC%AA%E5%85%B1%E4%BA%AB/">
-            <strong>1-CPU缓存行和伪共享</strong>
-            <em>2026-08-15</em>
-          </a>
-        </li>
-      
-        <li>
-          <a class="recent-item" href="/2026/08/14/hello-world/">
-            <strong>Hello World</strong>
-            <em>2026-08-14</em>
-          </a>
-        </li>
-      
-    </ul>
-  </section>
-
-
-</aside>
-
     
   </main>
 
