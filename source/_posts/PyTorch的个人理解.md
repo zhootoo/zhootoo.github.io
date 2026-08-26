@@ -1,12 +1,14 @@
 ---
 title: PyTorch的个人理解
-date: 2025-08-26 07:46:36
+date: 2026-08-26 07:46:36
 categories: [深度学习]
 tags:
   - PyTorch
   - 深度学习
   - LLM
 ---
+
+{% asset_img pytorch.png PyTorch %}
 
 接触 PyTorch 也有一段时间了，从最初的“照着教程敲代码”，到后来能比较顺畅地搭模型、调训练循环。这篇文章不是官方文档的翻译，而是我站在使用者角度，对 PyTorch 底层设计的一些个人理解，希望能帮到同样在入门的朋友。
 
