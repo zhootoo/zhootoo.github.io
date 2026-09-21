@@ -1,26 +1,30 @@
 <!doctype html>
 
-<html lang="zh-CN">
+<html lang="zh-CN" data-fancybox-enabled="1">
 <head>
   <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#f7f3e9" data-flatpaper-theme-color>
 
-<title>归档：2025/08 | zhootoo</title>
-<meta name="description" content="归档：2025&#x2F;08收录 1 篇文章，包括PyTorch的个人理解。">
-<meta property="og:type" content="website">
-<meta property="og:title" content="归档：2025&#x2F;08 | zhootoo">
-<meta property="og:url" content="https://zhootoo.github.io/archives/2025/08/">
+<title>深入理解C++之Virtual实现机制 | zhootoo</title>
+<meta name="description" content="引言 一、Virtual 的语义：为什么需要它 1.1 静态绑定 vs 动态绑定 123456class Animal &#123;public: void speak() &#123; std::cout &lt;&lt; &quot;...&quot; &lt;&lt; std::endl; &#125;&#125;;&#x2F;&#x2F; Animal* a &#x3D; new...">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解C++之Virtual实现机制 | zhootoo">
+<meta property="og:url" content="https://zhootoo.github.io/2026/07/14/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3C-Virtual/">
 <meta property="og:site_name" content="zhootoo">
-<meta property="og:description" content="归档：2025&#x2F;08收录 1 篇文章，包括PyTorch的个人理解。">
+<meta property="og:description" content="引言 一、Virtual 的语义：为什么需要它 1.1 静态绑定 vs 动态绑定 123456class Animal &#123;public: void speak() &#123; std::cout &lt;&lt; &quot;...&quot; &lt;&lt; std::endl; &#125;&#125;;&#x2F;&#x2F; Animal* a &#x3D; new...">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-07-14T06:50:59.000Z">
+<meta property="article:modified_time" content="2026-09-21T04:19:42.358Z">
 <meta property="article:author" content="zhootoo">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="编程语言">
 <meta name="twitter:card" content="summary">
-<link rel="canonical" href="https://zhootoo.github.io/archives/2025/08/">
+<link rel="canonical" href="https://zhootoo.github.io/2026/07/14/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3C-Virtual/">
 
 <link rel="icon" href="/images/favicon.png" type="image/png">
 
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","headline":"归档：2025/08 | zhootoo","name":"归档：2025/08 | zhootoo","description":"归档：2025/08收录 1 篇文章，包括PyTorch的个人理解。","url":"https://zhootoo.github.io/archives/2025/08/","inLanguage":"zh-CN","isPartOf":{"@type":"WebSite","name":"zhootoo","url":"https://zhootoo.github.io/"},"about":"归档：2025/08"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"深入理解C++之Virtual实现机制","name":"深入理解C++之Virtual实现机制 | zhootoo","description":"引言 一、Virtual 的语义：为什么需要它 1.1 静态绑定 vs 动态绑定 123456class Animal &#123;public: void speak() &#123; std::cout &lt;&lt; &quot;...&quot; &lt;&lt; std::endl; &#125;&#125;;// Animal* a = new...","url":"https://zhootoo.github.io/2026/07/14/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3C-Virtual/","inLanguage":"zh-CN","isPartOf":{"@type":"WebSite","name":"zhootoo","url":"https://zhootoo.github.io/"},"mainEntityOfPage":"https://zhootoo.github.io/2026/07/14/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3C-Virtual/","datePublished":"2026-07-14T06:50:59.000Z","dateModified":"2026-09-21T04:19:42.358Z","author":{"@type":"Person","name":"zhootoo"},"publisher":{"@type":"Organization","name":"zhootoo"},"keywords":"C++, 编程语言"}</script>
 
 <script>
   (function () {
@@ -56,12 +60,15 @@
   
 
   
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css">
+<script defer src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+
 
   
 <meta name="generator" content="Hexo 8.1.2"></head>
 
 <body
-  class="is-list tag-style-tape bg-style-default"
+  class="is-post tag-style-tape bg-style-default"
   data-default-accent="green"
   data-code-theme="simple"
   data-note-style="sticky"
@@ -170,7 +177,7 @@
       
     
       
-        <div class="site-nav-item has-children active">
+        <div class="site-nav-item has-children">
           <button class="site-nav-link site-nav-parent" type="button" aria-haspopup="true" aria-expanded="false">
             
 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-folder"></use></svg>
@@ -193,7 +200,7 @@
                 <span>标签</span>
               </a>
             
-              <a role="menuitem" class="active" href="/archives/">
+              <a role="menuitem" class="" href="/archives/">
                 
 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-archive flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-archive"></use></svg>
 
@@ -255,7 +262,7 @@
 
 
   
-  <main class="paper-shell ">
+  <main class="paper-shell paper-shell--article">
     
 
 <aside id="paper-sidebar-drawer" class="paper-sidebar paper-sidebar--right" aria-label="侧边栏">
@@ -312,8 +319,8 @@
         
       
         
-          <div class="drawer-nav-group is-open active">
-            <button class="drawer-nav-parent" type="button" aria-expanded="true">
+          <div class="drawer-nav-group">
+            <button class="drawer-nav-parent" type="button" aria-expanded="false">
               
 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-folder"></use></svg>
 
@@ -335,7 +342,7 @@
                   <span>标签</span>
                 </a>
               
-                <a class="active" href="/archives/">
+                <a class="" href="/archives/">
                   
 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-archive flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-archive"></use></svg>
 
@@ -442,56 +449,28 @@
   
 
   
-    <section class="side-card categories-card">
-      <h2>
-<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-folder"></use></svg>
-分类</h2>
-      
-        <a href="/categories/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">
-          <span class="dot dot-0"></span>
-          <strong>性能优化</strong>
-          <em>1</em>
-        </a>
-      
-        <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">
-          <span class="dot dot-1"></span>
-          <strong>深度学习</strong>
-          <em>1</em>
-        </a>
-      
-    </section>
+    <div class="post-sticky-stack">
+      <section class="side-card toc-card">
+        <header class="toc-card__head">
+          <h2>
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-table-of-contents flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-table-of-contents"></use></svg>
+文章目录</h2>
+          <button type="button" class="toc-toggle-all" data-action="toggle-toc" aria-pressed="false" aria-label="展开全部目录" title="展开全部目录">
+            
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-chevron-down"></use></svg>
 
-    <section class="side-card tag-card">
-      <header class="tag-card__head">
-        <h2>
-<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-flame flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-flame"></use></svg>
-热门标签</h2>
-        <a class="tag-card__more" href="/tags/">
-          <span>查看全部</span>
+          </button>
+        </header>
+        <div class="toc-content">
           
-<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-arrow-right"></use></svg>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-text">引言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81Virtual-%E7%9A%84%E8%AF%AD%E4%B9%89%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%AE%83"><span class="toc-text">一、Virtual 的语义：为什么需要它</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E9%9D%99%E6%80%81%E7%BB%91%E5%AE%9A-vs-%E5%8A%A8%E6%80%81%E7%BB%91%E5%AE%9A"><span class="toc-text">1.1 静态绑定 vs 动态绑定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E5%8A%A0%E4%B8%8A-virtual-%E4%B9%8B%E5%90%8E"><span class="toc-text">1.2 加上 virtual 之后</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81Virtual-%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95"><span class="toc-text">二、Virtual 的基本用法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E8%99%9A%E5%87%BD%E6%95%B0%E7%9A%84%E5%A3%B0%E6%98%8E%E4%B8%8E%E9%87%8D%E5%86%99%EF%BC%88override%EF%BC%89"><span class="toc-text">2.1 虚函数的声明与重写（override）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E8%99%9A%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0"><span class="toc-text">2.2 虚析构函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E7%BA%AF%E8%99%9A%E5%87%BD%E6%95%B0%E4%B8%8E%E6%8A%BD%E8%B1%A1%E7%B1%BB"><span class="toc-text">2.3 纯虚函数与抽象类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-%E5%8D%8F%E5%8F%98%E8%BF%94%E5%9B%9E%E7%B1%BB%E5%9E%8B%EF%BC%88Covariant-Return%EF%BC%89"><span class="toc-text">2.4 协变返回类型（Covariant Return）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-%E8%99%9A%E7%BB%A7%E6%89%BF%EF%BC%88%E9%A2%84%E5%9F%8B%E4%BC%8F%E7%AC%94%EF%BC%89"><span class="toc-text">2.5 虚继承（预埋伏笔）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-%E4%B8%8D%E8%83%BD%E6%98%AF%E8%99%9A%E5%87%BD%E6%95%B0%E7%9A%84%E6%83%85%E5%86%B5"><span class="toc-text">2.6 不能是虚函数的情况</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%AE%9E%E7%8E%B0%E6%9C%BA%E5%88%B6%EF%BC%9Avptr-%E4%B8%8E-vtable"><span class="toc-text">三、实现机制：vptr 与 vtable</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E4%B8%80%E4%B8%AA%E5%85%B3%E9%94%AE%E9%97%AE%E9%A2%98%EF%BC%9A%E8%BF%90%E8%A1%8C%E6%9C%9F%E5%A6%82%E4%BD%95%E7%9F%A5%E9%81%93%E8%AF%A5%E8%B0%83%E8%B0%81%EF%BC%9F"><span class="toc-text">3.1 一个关键问题：运行期如何知道该调谁？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E8%99%9A%E5%87%BD%E6%95%B0%E8%A1%A8%EF%BC%88vtable%EF%BC%89%E7%9A%84%E7%BB%93%E6%9E%84"><span class="toc-text">3.2 虚函数表（vtable）的结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E5%AF%B9%E8%B1%A1%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80%EF%BC%9Avptr-%E8%97%8F%E5%9C%A8%E5%93%AA%E9%87%8C"><span class="toc-text">3.3 对象内存布局：vptr 藏在哪里</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E8%99%9A%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E7%9A%84%E5%AE%8C%E6%95%B4%E8%BF%87%E7%A8%8B"><span class="toc-text">3.4 虚函数调用的完整过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-%E6%9E%84%E9%80%A0-%E6%9E%90%E6%9E%84%E6%9C%9F%E9%97%B4%E7%9A%84%E8%99%9A%E5%87%BD%E6%95%B0%E8%A1%8C%E4%B8%BA"><span class="toc-text">3.5 构造&#x2F;析构期间的虚函数行为</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-6-%E5%A4%9A%E7%BB%A7%E6%89%BF%E4%B8%8B%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-text">3.6 多继承下的实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-7-%E8%99%9A%E7%BB%A7%E6%89%BF%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-text">3.7 虚继承的实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E4%BB%A3%E4%BB%B7%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5"><span class="toc-text">四、代价与工程实践</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-virtual-%E7%9A%84%E5%BC%80%E9%94%80%E6%B8%85%E5%8D%95"><span class="toc-text">4.1 virtual 的开销清单</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E4%B8%8D%E8%AF%A5%E7%94%A8-virtual"><span class="toc-text">4.2 什么时候不该用 virtual</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%E4%B8%8E%E6%BC%94%E8%BF%9B"><span class="toc-text">4.3 替代方案与演进</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%80%BB%E7%BB%93"><span class="toc-text">五、总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-text">参考资料</span></a></li></ol>
+          
+        </div>
+      </section>
+      
 
-        </a>
-      </header>
-      <div class="tag-cloud">
-        
-        
-          <a class="tag-chip tag-chip-0" href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">性能优化</a>
-        
-          <a class="tag-chip tag-chip-1" href="/tags/CPU/">CPU</a>
-        
-          <a class="tag-chip tag-chip-2" href="/tags/%E7%BC%93%E5%AD%98/">缓存</a>
-        
-          <a class="tag-chip tag-chip-3" href="/tags/%E5%B9%B6%E5%8F%91/">并发</a>
-        
-          <a class="tag-chip tag-chip-4" href="/tags/PyTorch/">PyTorch</a>
-        
-          <a class="tag-chip tag-chip-5" href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a>
-        
-          <a class="tag-chip tag-chip-0" href="/tags/LLM/">LLM</a>
-        
-      </div>
-    </section>
+
+    </div>
   
 
   
@@ -500,66 +479,252 @@
 
     <section class="paper-main">
       
-<section class="archive-paper">
+
+<div class="article-tape-wrap">
+<span class="tape tape--top-right" aria-hidden="true"></span>
+<article class="article-paper">
   
-    <h1>归档</h1>
-  
-  <div class="archive-list">
+  <header class="article-header">
     
-      <a class="archive-item" href="/2025/08/26/PyTorch%E7%9A%84%E4%B8%AA%E4%BA%BA%E7%90%86%E8%A7%A3/">
-        <span>2025-08-26</span>
-        <strong>PyTorch的个人理解</strong>
-        <em></em>
+      <a class="label-pill" href="/categories/C/">
+        
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-folder"></use></svg>
+
+        C++
       </a>
     
+    <h1>深入理解C++之Virtual实现机制</h1>
+    <div class="meta-line meta-line--article">
+      <span class="meta-date">
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-calendar"></use></svg>
+2026-07-14</span>
+      
+        <span class="meta-tags">
+          
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tag flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-tag"></use></svg>
+
+          <a class="meta-tag-link" href="/tags/C/">#C++</a><a class="meta-tag-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">#编程语言</a>
+        </span>
+      
+    </div>
+  </header>
+
+  
+
+
+  <div class="article-content">
+    <!-- 写作主线：先讲"是什么、为什么、怎么用"（语义层），再讲"编译器和运行时如何实现"（机制层）。
+     读者画像：会用虚函数、但没深究过底层实现的 C++ 开发者。
+     核心问题：virtual 到底给对象和函数"多"了什么？答案落在 vptr + vtable 上。 -->
+
+<h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><!-- 为什么要写这篇文章：
+     - virtual 是 C++ 面向对象三大特性中"多态"的基石，但很多人只会用、不懂原理
+     - 面试高频考点，也是理解对象内存布局、性能开销的入口
+     本文结构：先梳理 virtual 的语义和用法，再深入到编译器层面的实现机制 -->
+
+<h2 id="一、Virtual-的语义：为什么需要它"><a href="#一、Virtual-的语义：为什么需要它" class="headerlink" title="一、Virtual 的语义：为什么需要它"></a>一、Virtual 的语义：为什么需要它</h2><!-- 从问题出发引出 virtual，而不是直接给定义 -->
+
+<h3 id="1-1-静态绑定-vs-动态绑定"><a href="#1-1-静态绑定-vs-动态绑定" class="headerlink" title="1.1 静态绑定 vs 动态绑定"></a>1.1 静态绑定 vs 动态绑定</h3><!-- - 普通函数调用在编译期就确定调用目标（静态绑定/早绑定）
+     - 需求：用基类指针/引用调用时，希望执行"实际对象"的版本（动态绑定/晚绑定）
+     - 用一段"不加 virtual 时输出不符合预期"的代码引出问题 -->
+
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Animal</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">speak</span><span class="params">()</span> </span>&#123; std::cout &lt;&lt; <span class="string">&quot;...&quot;</span> &lt;&lt; std::endl; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// Animal* a = new Dog; a-&gt;speak();  // 输出的是 Animal 的版本，为什么？</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-加上-virtual-之后"><a href="#1-2-加上-virtual-之后" class="headerlink" title="1.2 加上 virtual 之后"></a>1.2 加上 virtual 之后</h3><!-- - 对比代码：speak 声明为 virtual 后行为改变
+     - 给出多态的定义：同一接口、不同行为，绑定推迟到运行期
+     - 点出关键规则：通过基类指针或引用调用才触发动态绑定 -->
+
+<h2 id="二、Virtual-的基本用法"><a href="#二、Virtual-的基本用法" class="headerlink" title="二、Virtual 的基本用法"></a>二、Virtual 的基本用法</h2><h3 id="2-1-虚函数的声明与重写（override）"><a href="#2-1-虚函数的声明与重写（override）" class="headerlink" title="2.1 虚函数的声明与重写（override）"></a>2.1 虚函数的声明与重写（override）</h3><!-- - virtual 声明、派生类中自动为虚
+     - override / final 关键字（C++11）：显式标注重写，防拼写错误
+     - 重写(override) vs 重载(overload) vs 隐藏(hiding) 的区别，一张表格对比 -->
+
+<h3 id="2-2-虚析构函数"><a href="#2-2-虚析构函数" class="headerlink" title="2.2 虚析构函数"></a>2.2 虚析构函数</h3><!-- - 通过基类指针 delete 派生类对象，若析构非虚 → 未定义行为/资源泄漏
+     - 经验法则：作为基类使用的类，析构函数要么 public virtual，要么 protected non-virtual -->
+
+<h3 id="2-3-纯虚函数与抽象类"><a href="#2-3-纯虚函数与抽象类" class="headerlink" title="2.3 纯虚函数与抽象类"></a>2.3 纯虚函数与抽象类</h3><!-- - 纯虚函数：virtual void f() = 0; 定义"接口"
+     - 抽象类不能实例化，派生类必须实现所有纯虚函数
+     - 纯虚函数也可以有实现体（鲜为人知的点，可选） -->
+
+<h3 id="2-4-协变返回类型（Covariant-Return）"><a href="#2-4-协变返回类型（Covariant-Return）" class="headerlink" title="2.4 协变返回类型（Covariant Return）"></a>2.4 协变返回类型（Covariant Return）</h3><!-- - 派生类重写时返回类型可以是基类返回类型的派生类，仍构成重写（可选小节） -->
+
+<h3 id="2-5-虚继承（预埋伏笔）"><a href="#2-5-虚继承（预埋伏笔）" class="headerlink" title="2.5 虚继承（预埋伏笔）"></a>2.5 虚继承（预埋伏笔）</h3><!-- - virtual 还能修饰继承方式，解决菱形继承问题
+     - 注意：虚继承的实现机制和虚函数完全不同！这里只提一句，后文单独展开
+     - 提示读者不要把"virtual 函数"和"virtual 继承"的实现混为一谈 -->
+
+<h3 id="2-6-不能是虚函数的情况"><a href="#2-6-不能是虚函数的情况" class="headerlink" title="2.6 不能是虚函数的情况"></a>2.6 不能是虚函数的情况</h3><!-- - 构造函数为什么不能是虚的（先有对象才有 vptr）
+     - 静态函数、内联函数（虚函数调用通常不被内联）等限制 -->
+
+<h2 id="三、实现机制：vptr-与-vtable"><a href="#三、实现机制：vptr-与-vtable" class="headerlink" title="三、实现机制：vptr 与 vtable"></a>三、实现机制：vptr 与 vtable</h2><!-- 本章是文章核心，建议配内存布局图 -->
+
+<h3 id="3-1-一个关键问题：运行期如何知道该调谁？"><a href="#3-1-一个关键问题：运行期如何知道该调谁？" class="headerlink" title="3.1 一个关键问题：运行期如何知道该调谁？"></a>3.1 一个关键问题：运行期如何知道该调谁？</h3><!-- - 编译器必须把"调用哪个函数"的决定从编译期挪到运行期
+     - 思路推演：如果由语言直接支持，需要哪些信息？
+       1. 每个对象要携带"自己属于哪个类"的信息
+       2. 每个类要有一张"函数入口地址表"
+     - 引出 vptr（对象内）与 vtable（每个类一份） -->
+
+<h3 id="3-2-虚函数表（vtable）的结构"><a href="#3-2-虚函数表（vtable）的结构" class="headerlink" title="3.2 虚函数表（vtable）的结构"></a>3.2 虚函数表（vtable）的结构</h3><!-- - vtable 是编译期生成的静态数组，存放该类所有虚函数的地址
+     - 通常还包括：RTTI 信息（type_info）、虚继承相关的 offset 等（依编译器而异）
+     - 同一个类的所有对象共享一张 vtable；派生类的 vtable 由基类的拷贝而来，
+       被重写的槽位替换成新地址，新增虚函数追加在后面
+     - 建议画一张 Base/Derived 两张 vtable 的对照图 -->
+
+<h3 id="3-3-对象内存布局：vptr-藏在哪里"><a href="#3-3-对象内存布局：vptr-藏在哪里" class="headerlink" title="3.3 对象内存布局：vptr 藏在哪里"></a>3.3 对象内存布局：vptr 藏在哪里</h3><!-- - 含虚函数的类，编译器隐式给每个对象插入一个 vptr 成员（通常在对象头部）
+     - sizeof 的变化：空类 1 字节 → 含虚函数 8 字节（64 位）
+     - 用代码验证：打印 sizeof、成员偏移（offsetof 不可用于非标准布局，可用伪代码示意） -->
+
+<h3 id="3-4-虚函数调用的完整过程"><a href="#3-4-虚函数调用的完整过程" class="headerlink" title="3.4 虚函数调用的完整过程"></a>3.4 虚函数调用的完整过程</h3><!-- 一步步拆解一次调用的汇编级过程：
+     mov rax, [rdi]        ; 取对象 vptr
+     call [rax + offset]  ; 查表取函数地址并调用
+     - 一次虚调用 = 2 次内存间接寻址
+     - 所以构造函数不能是虚的：对象构造时 vptr 才由编译器写入
+     - 虚函数调用默认不能内联（运行期才知道目标），除非编译器去虚化（devirtualization） -->
+
+<h3 id="3-5-构造-析构期间的虚函数行为"><a href="#3-5-构造-析构期间的虚函数行为" class="headerlink" title="3.5 构造&#x2F;析构期间的虚函数行为"></a>3.5 构造&#x2F;析构期间的虚函数行为</h3><!-- - 构造派生类对象时：基类构造 → 派生类构造，vptr 逐步切换
+     - 在基类构造函数中调用虚函数，调用的是基类版本（此时 vptr 指向基类 vtable）
+     - 析构过程反向同理，这是经典陷阱 -->
+
+<h3 id="3-6-多继承下的实现"><a href="#3-6-多继承下的实现" class="headerlink" title="3.6 多继承下的实现"></a>3.6 多继承下的实现</h3><!-- - 有多个基类 → 对象内有多个 vptr，每个基类子对象各有一个
+     - this 指针调整（thunk 技术）：通过第二个基类指针调用时需修正 this
+     - 建议画多继承对象的内存布局图 -->
+
+<h3 id="3-7-虚继承的实现"><a href="#3-7-虚继承的实现" class="headerlink" title="3.7 虚继承的实现"></a>3.7 虚继承的实现</h3><!-- - 菱形继承下公共基类只有一份，位于（通常）对象尾部
+     - 通过 vtable 中的 vbase offset 找到虚基类子对象
+     - 解释虚继承下访问公共基类成员为什么更慢：多一层间接 -->
+
+<h2 id="四、代价与工程实践"><a href="#四、代价与工程实践" class="headerlink" title="四、代价与工程实践"></a>四、代价与工程实践</h2><h3 id="4-1-virtual-的开销清单"><a href="#4-1-virtual-的开销清单" class="headerlink" title="4.1 virtual 的开销清单"></a>4.1 virtual 的开销清单</h3><!-- - 空间：每个对象 +8 字节（64 位下 vptr）；每个类一张 vtable
+     - 时间：虚调用多 2 次内存访问 + 阻碍内联 + 分支预测不友好
+     - 量化感受：绝大多数场景可忽略，但热循环/每对象数量巨大时需要注意 -->
+
+<h3 id="4-2-什么时候不该用-virtual"><a href="#4-2-什么时候不该用-virtual" class="headerlink" title="4.2 什么时候不该用 virtual"></a>4.2 什么时候不该用 virtual</h3><!-- - 不作为基类使用的类不要加虚函数（EBO：非虚类空基类可优化为 0 字节）
+     - 对性能极致敏感的组件（如向量运算、ECS）常用 CRTP 静态多态替代 -->
+
+<h3 id="4-3-替代方案与演进"><a href="#4-3-替代方案与演进" class="headerlink" title="4.3 替代方案与演进"></a>4.3 替代方案与演进</h3><!-- - CRTP（静态多态）
+     - std::variant + std::visit
+     - C++20 concepts：面向接口编程不一定要继承
+     - 编译器去虚化（devirtualization）与 final 的助益 -->
+
+<h2 id="五、总结"><a href="#五、总结" class="headerlink" title="五、总结"></a>五、总结</h2><!-- - 一张表总结：virtual 的用法（虚函数/虚析构/纯虚/虚继承）与对应实现机制
+     - 核心结论：virtual 的本质 = 编译器帮你插入 vptr、生成 vtable、
+       把静态的函数调用改写成查表的间接调用
+     - 理解机制后回看那些"规则"（构造函数不能虚、构造期虚调用陷阱、
+       虚析构必要性）都变成了自然推论 -->
+
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><!-- - 《深度探索 C++ 对象模型》Stanley Lippman
+     - 《Inside the C++ Object Model》
+     - cppreference: Virtual functions
+     - Itanium C++ ABI（vtable 的规范定义）
+     - MSVC 的实现差异说明（vtordisp 等，可选） -->
+
   </div>
-</section>
+
+  <footer class="article-reactions">
+    <div class="reaction-group">
+      <button type="button" class="reaction reaction--comment" aria-label="跳转到评论区" data-action="scroll-to-comments">
+        
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-message-circle"></use></svg>
+
+      </button>
+      <span class="reaction-label">评论</span>
+      
+    </div>
+    <div class="reaction-group reaction-group--right">
+      
+      <button type="button" class="reaction reaction--share" aria-label="分享" data-action="share">
+        
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-share-2 flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-share-2"></use></svg>
+
+      </button>
+      <span class="reaction-label">分享</span>
+    </div>
+  </footer>
+
+  
 
 
+  <nav class="article-actions">
+    
+      <a class="article-action article-action--prev" href="/2026/08/12/%E5%85%B3%E4%BA%8Econst-constexpr-consteval%E7%9A%84%E4%B8%80%E4%BA%9B%E5%88%86%E6%9E%90/">
+        
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-arrow-left"></use></svg>
+
+        <span class="action-label">上一篇</span>
+        <span class="action-title">C++中的 const/constexpr/consteval/constinit 的一些分析</span>
+      </a>
+    
+    
+      <span class="article-action article-action--next is-disabled" aria-disabled="true">
+        <span class="action-label">下一篇</span>
+        <span class="action-title">已经是最新的一篇</span>
+        
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-arrow-right"></use></svg>
+
+      </span>
+    
+  </nav>
+</article>
+</div>
+
+<button type="button" class="back-to-top" data-action="scroll-to-top" aria-label="返回顶部" hidden>
+  
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-arrow-up"></use></svg>
+
+</button>
+
+
+  <section class="related-paper">
+    <header class="related-paper__head">
+      <h2>
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-link"></use></svg>
+相关文章</h2>
+      <a class="related-paper__more" href="/archives/">
+        <span>查看更多</span>
+        
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-arrow-right"></use></svg>
+
+      </a>
+    </header>
+    <div class="related-paper__grid">
+      
+        <a class="related-card" href="/2026/08/21/%E8%AF%A6%E8%A7%A3CPP%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80/">
+          <span class="related-card__thumb">
+            
+<div class="paper-thumb paper-thumb-0 paper-thumb--cover">
+  
+    <img class="paper-thumb__img" src="/images/cover/camera.webp" alt="" loading="lazy" referrerpolicy="no-referrer">
+  
+</div>
+
+          </span>
+          <span class="related-card__body">
+            <strong class="related-card__title">详解CPP内存布局</strong>
+            <em class="related-card__date">2026-08-21</em>
+          </span>
+        </a>
+      
+        <a class="related-card" href="/2026/08/12/%E5%85%B3%E4%BA%8Econst-constexpr-consteval%E7%9A%84%E4%B8%80%E4%BA%9B%E5%88%86%E6%9E%90/">
+          <span class="related-card__thumb">
+            
+<div class="paper-thumb paper-thumb-1 paper-thumb--cover">
+  
+    <img class="paper-thumb__img" src="/images/cover/mountain.webp" alt="" loading="lazy" referrerpolicy="no-referrer">
+  
+</div>
+
+          </span>
+          <span class="related-card__body">
+            <strong class="related-card__title">C++中的 const/constexpr/consteval/constinit 的一些分析</strong>
+            <em class="related-card__date">2026-08-12</em>
+          </span>
+        </a>
+      
+    </div>
+  </section>
 
 
       
 
 
     </section>
-    
-      <aside class="paper-sidebar paper-sidebar--left">
-  
-  
-
-  <section class="side-card recent-card" data-random-posts-limit="5" data-random-posts-url="/flatpaper-random-posts.json" data-random-posts-current="/archives/2025/08/index.html">
-    <h2>
-<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shuffle flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-shuffle"></use></svg>
-随机文章</h2>
-    <ul class="recent-list js-random-posts">
-      
-        <li>
-          <a class="recent-item" href="/2026/08/15/1-CPU%E7%BC%93%E5%AD%98%E8%A1%8C%E5%92%8C%E4%BC%AA%E5%85%B1%E4%BA%AB/">
-            <strong>1-CPU缓存行和伪共享</strong>
-            <em>2026-08-15</em>
-          </a>
-        </li>
-      
-        <li>
-          <a class="recent-item" href="/2026/08/14/hello-world/">
-            <strong>Hello World</strong>
-            <em>2026-08-14</em>
-          </a>
-        </li>
-      
-        <li>
-          <a class="recent-item" href="/2025/08/26/PyTorch%E7%9A%84%E4%B8%AA%E4%BA%BA%E7%90%86%E8%A7%A3/">
-            <strong>PyTorch的个人理解</strong>
-            <em>2025-08-26</em>
-          </a>
-        </li>
-      
-    </ul>
-  </section>
-
-
-</aside>
-
     
   </main>
 

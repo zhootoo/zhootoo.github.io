@@ -1,30 +1,26 @@
 <!doctype html>
 
-<html lang="zh-CN" data-fancybox-enabled="1">
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#f7f3e9" data-flatpaper-theme-color>
 
-<title>1-CPU缓存行和伪共享 | zhootoo</title>
-<meta property="og:type" content="article">
-<meta property="og:title" content="1-CPU缓存行和伪共享 | zhootoo">
-<meta property="og:url" content="https://zhootoo.github.io/2026/08/15/1-CPU%E7%BC%93%E5%AD%98%E8%A1%8C%E5%92%8C%E4%BC%AA%E5%85%B1%E4%BA%AB/">
+<title>标签：编程语言 | zhootoo</title>
+<meta name="description" content="标签「编程语言」收录 3 篇文章，包括详解CPP内存布局、C++中的 const&#x2F;constexpr&#x2F;consteval&#x2F;constinit 的一些分析、深入理解C++之Virtual实现机制。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="标签：编程语言 | zhootoo">
+<meta property="og:url" content="https://zhootoo.github.io/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">
 <meta property="og:site_name" content="zhootoo">
+<meta property="og:description" content="标签「编程语言」收录 3 篇文章，包括详解CPP内存布局、C++中的 const&#x2F;constexpr&#x2F;consteval&#x2F;constinit 的一些分析、深入理解C++之Virtual实现机制。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2026-08-15T04:53:36.000Z">
-<meta property="article:modified_time" content="2026-08-15T05:33:16.784Z">
 <meta property="article:author" content="zhootoo">
-<meta property="article:tag" content="CPU">
-<meta property="article:tag" content="并发">
-<meta property="article:tag" content="性能优化">
-<meta property="article:tag" content="缓存">
 <meta name="twitter:card" content="summary">
-<link rel="canonical" href="https://zhootoo.github.io/2026/08/15/1-CPU%E7%BC%93%E5%AD%98%E8%A1%8C%E5%92%8C%E4%BC%AA%E5%85%B1%E4%BA%AB/">
+<link rel="canonical" href="https://zhootoo.github.io/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">
 
 <link rel="icon" href="/images/favicon.png" type="image/png">
 
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"1-CPU缓存行和伪共享","name":"1-CPU缓存行和伪共享 | zhootoo","description":"","url":"https://zhootoo.github.io/2026/08/15/1-CPU%E7%BC%93%E5%AD%98%E8%A1%8C%E5%92%8C%E4%BC%AA%E5%85%B1%E4%BA%AB/","inLanguage":"zh-CN","isPartOf":{"@type":"WebSite","name":"zhootoo","url":"https://zhootoo.github.io/"},"mainEntityOfPage":"https://zhootoo.github.io/2026/08/15/1-CPU%E7%BC%93%E5%AD%98%E8%A1%8C%E5%92%8C%E4%BC%AA%E5%85%B1%E4%BA%AB/","datePublished":"2026-08-15T04:53:36.000Z","dateModified":"2026-08-15T05:33:16.784Z","author":{"@type":"Person","name":"zhootoo"},"publisher":{"@type":"Organization","name":"zhootoo"},"keywords":"性能优化, CPU, 缓存, 并发"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","headline":"标签：编程语言 | zhootoo","name":"标签：编程语言 | zhootoo","description":"标签「编程语言」收录 3 篇文章，包括详解CPP内存布局、C++中的 const/constexpr/consteval/constinit 的一些分析、深入理解C++之Virtual实现机制。","url":"https://zhootoo.github.io/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/","inLanguage":"zh-CN","isPartOf":{"@type":"WebSite","name":"zhootoo","url":"https://zhootoo.github.io/"},"about":"标签：编程语言"}</script>
 
 <script>
   (function () {
@@ -60,15 +56,12 @@
   
 
   
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css">
-<script defer src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
-
 
   
 <meta name="generator" content="Hexo 8.1.2"></head>
 
 <body
-  class="is-post tag-style-tape bg-style-default"
+  class="is-list tag-style-tape bg-style-default"
   data-default-accent="green"
   data-code-theme="simple"
   data-note-style="sticky"
@@ -177,7 +170,7 @@
       
     
       
-        <div class="site-nav-item has-children">
+        <div class="site-nav-item has-children active">
           <button class="site-nav-link site-nav-parent" type="button" aria-haspopup="true" aria-expanded="false">
             
 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-folder"></use></svg>
@@ -193,7 +186,7 @@
                 <span>分类</span>
               </a>
             
-              <a role="menuitem" class="" href="/tags/">
+              <a role="menuitem" class="active" href="/tags/">
                 
 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tag flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-tag"></use></svg>
 
@@ -262,7 +255,7 @@
 
 
   
-  <main class="paper-shell paper-shell--article">
+  <main class="paper-shell ">
     
 
 <aside id="paper-sidebar-drawer" class="paper-sidebar paper-sidebar--right" aria-label="侧边栏">
@@ -319,8 +312,8 @@
         
       
         
-          <div class="drawer-nav-group">
-            <button class="drawer-nav-parent" type="button" aria-expanded="false">
+          <div class="drawer-nav-group is-open active">
+            <button class="drawer-nav-parent" type="button" aria-expanded="true">
               
 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-folder"></use></svg>
 
@@ -335,7 +328,7 @@
                   <span>分类</span>
                 </a>
               
-                <a class="" href="/tags/">
+                <a class="active" href="/tags/">
                   
 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tag flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-tag"></use></svg>
 
@@ -449,28 +442,66 @@
   
 
   
-    <div class="post-sticky-stack">
-      <section class="side-card toc-card">
-        <header class="toc-card__head">
-          <h2>
-<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-table-of-contents flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-table-of-contents"></use></svg>
-文章目录</h2>
-          <button type="button" class="toc-toggle-all" data-action="toggle-toc" aria-pressed="false" aria-label="展开全部目录" title="展开全部目录">
-            
-<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-chevron-down"></use></svg>
-
-          </button>
-        </header>
-        <div class="toc-content">
-          
-            
-          
-        </div>
-      </section>
+    <section class="side-card categories-card">
+      <h2>
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-folder"></use></svg>
+分类</h2>
       
+        <a href="/categories/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">
+          <span class="dot dot-0"></span>
+          <strong>性能优化</strong>
+          <em>1</em>
+        </a>
+      
+        <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">
+          <span class="dot dot-1"></span>
+          <strong>深度学习</strong>
+          <em>1</em>
+        </a>
+      
+        <a href="/categories/C/">
+          <span class="dot dot-2"></span>
+          <strong>C++</strong>
+          <em>3</em>
+        </a>
+      
+    </section>
 
+    <section class="side-card tag-card">
+      <header class="tag-card__head">
+        <h2>
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-flame flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-flame"></use></svg>
+热门标签</h2>
+        <a class="tag-card__more" href="/tags/">
+          <span>查看全部</span>
+          
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-arrow-right"></use></svg>
 
-    </div>
+        </a>
+      </header>
+      <div class="tag-cloud">
+        
+        
+          <a class="tag-chip tag-chip-0" href="/tags/C/">C++</a>
+        
+          <a class="tag-chip tag-chip-1" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+        
+          <a class="tag-chip tag-chip-2" href="/tags/CPU/">CPU</a>
+        
+          <a class="tag-chip tag-chip-3" href="/tags/%E7%BC%93%E5%AD%98/">缓存</a>
+        
+          <a class="tag-chip tag-chip-4" href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">性能优化</a>
+        
+          <a class="tag-chip tag-chip-5" href="/tags/%E5%B9%B6%E5%8F%91/">并发</a>
+        
+          <a class="tag-chip tag-chip-0" href="/tags/PyTorch/">PyTorch</a>
+        
+          <a class="tag-chip tag-chip-1" href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a>
+        
+          <a class="tag-chip tag-chip-2" href="/tags/LLM/">LLM</a>
+        
+      </div>
+    </section>
   
 
   
@@ -479,95 +510,33 @@
 
     <section class="paper-main">
       
-
-<div class="article-tape-wrap">
-<span class="tape tape--top-right" aria-hidden="true"></span>
-<article class="article-paper">
+<section class="archive-paper">
   
-  <header class="article-header">
+    <h1>编程语言</h1>
+  
+  <div class="archive-list">
     
-      <a class="label-pill" href="/categories/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">
-        
-<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-folder"></use></svg>
-
-        性能优化
+      <a class="archive-item" href="/2026/08/21/%E8%AF%A6%E8%A7%A3CPP%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80/">
+        <span>2026-08-21</span>
+        <strong>详解CPP内存布局</strong>
+        <em></em>
       </a>
     
-    <h1>1-CPU缓存行和伪共享</h1>
-    <div class="meta-line meta-line--article">
-      <span class="meta-date">
-<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-calendar"></use></svg>
-2026-08-15</span>
-      
-        <span class="meta-tags">
-          
-<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tag flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-tag"></use></svg>
-
-          <a class="meta-tag-link" href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">#性能优化</a><a class="meta-tag-link" href="/tags/CPU/">#CPU</a><a class="meta-tag-link" href="/tags/%E7%BC%93%E5%AD%98/">#缓存</a><a class="meta-tag-link" href="/tags/%E5%B9%B6%E5%8F%91/">#并发</a>
-        </span>
-      
-    </div>
-  </header>
-
-  
-
-
-  <div class="article-content">
+      <a class="archive-item" href="/2026/08/12/%E5%85%B3%E4%BA%8Econst-constexpr-consteval%E7%9A%84%E4%B8%80%E4%BA%9B%E5%88%86%E6%9E%90/">
+        <span>2026-08-12</span>
+        <strong>C++中的 const/constexpr/consteval/constinit 的一些分析</strong>
+        <em></em>
+      </a>
+    
+      <a class="archive-item" href="/2026/07/14/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3C-Virtual/">
+        <span>2026-07-14</span>
+        <strong>深入理解C++之Virtual实现机制</strong>
+        <em></em>
+      </a>
     
   </div>
+</section>
 
-  <footer class="article-reactions">
-    <div class="reaction-group">
-      <button type="button" class="reaction reaction--comment" aria-label="跳转到评论区" data-action="scroll-to-comments">
-        
-<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-message-circle"></use></svg>
-
-      </button>
-      <span class="reaction-label">评论</span>
-      
-    </div>
-    <div class="reaction-group reaction-group--right">
-      
-      <button type="button" class="reaction reaction--share" aria-label="分享" data-action="share">
-        
-<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-share-2 flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-share-2"></use></svg>
-
-      </button>
-      <span class="reaction-label">分享</span>
-    </div>
-  </footer>
-
-  
-
-
-  <nav class="article-actions">
-    
-      <span class="article-action article-action--prev is-disabled" aria-disabled="true">
-        
-<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-arrow-left"></use></svg>
-
-        <span class="action-label">上一篇</span>
-        <span class="action-title">没有更早的文章了</span>
-      </span>
-    
-    
-      <a class="article-action article-action--next" href="/2026/08/14/hello-world/">
-        <span class="action-label">下一篇</span>
-        <span class="action-title">Hello World</span>
-        
-<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-arrow-right"></use></svg>
-
-      </a>
-    
-  </nav>
-</article>
-</div>
-
-<button type="button" class="back-to-top" data-action="scroll-to-top" aria-label="返回顶部" hidden>
-  
-<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-arrow-up"></use></svg>
-
-</button>
 
 
 
@@ -575,6 +544,58 @@
 
 
     </section>
+    
+      <aside class="paper-sidebar paper-sidebar--left">
+  
+  
+
+  <section class="side-card recent-card" data-random-posts-limit="5" data-random-posts-url="/flatpaper-random-posts.json" data-random-posts-current="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/index.html">
+    <h2>
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shuffle flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-shuffle"></use></svg>
+随机文章</h2>
+    <ul class="recent-list js-random-posts">
+      
+        <li>
+          <a class="recent-item" href="/2026/08/26/PyTorch%20OverView/">
+            <strong>PyTorch OverView</strong>
+            <em>2026-08-26</em>
+          </a>
+        </li>
+      
+        <li>
+          <a class="recent-item" href="/2026/08/21/%E8%AF%A6%E8%A7%A3CPP%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80/">
+            <strong>详解CPP内存布局</strong>
+            <em>2026-08-21</em>
+          </a>
+        </li>
+      
+        <li>
+          <a class="recent-item" href="/2026/08/15/CPU%E7%BC%93%E5%AD%98%E8%A1%8C%E5%92%8C%E4%BC%AA%E5%85%B1%E4%BA%AB/">
+            <strong>CPU缓存行和伪共享</strong>
+            <em>2026-08-15</em>
+          </a>
+        </li>
+      
+        <li>
+          <a class="recent-item" href="/2026/08/12/%E5%85%B3%E4%BA%8Econst-constexpr-consteval%E7%9A%84%E4%B8%80%E4%BA%9B%E5%88%86%E6%9E%90/">
+            <strong>C++中的 const/constexpr/consteval/constinit 的一些分析</strong>
+            <em>2026-08-12</em>
+          </a>
+        </li>
+      
+        <li>
+          <a class="recent-item" href="/2026/07/14/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3C-Virtual/">
+            <strong>深入理解C++之Virtual实现机制</strong>
+            <em>2026-07-14</em>
+          </a>
+        </li>
+      
+    </ul>
+  </section>
+
+
+</aside>
+
     
   </main>
 
