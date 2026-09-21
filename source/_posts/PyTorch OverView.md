@@ -1,5 +1,5 @@
 ---
-title: PyTorch的个人理解
+title: PyTorch OverView
 date: 2026-08-26 07:46:36
 categories: [深度学习]
 tags:
@@ -84,6 +84,8 @@ torch.cat((tensor, tensor), dim=0)  # 沿着某个维度拼接
 ```
 
 #### 就地操作
+
+如果在基本操作后有一个下划线_，代表就地操作
 
 ```python
 tensor = torch.rand(3, 4)
