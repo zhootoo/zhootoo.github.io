@@ -1,6 +1,6 @@
 ---
 title: 谈谈Linux进程
-date: 2026-08-14 13::10:12
+date: 2026-08-14 13:10:12
 categories: [Linux]
 tags: 
 - Linux
