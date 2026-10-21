@@ -1,0 +1,1177 @@
+<!doctype html>
+
+<html lang="zh-CN" data-fancybox-enabled="1">
+<head>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f7f3e9" data-flatpaper-theme-color>
+
+<title>C++协程 | zhootoo</title>
+<meta name="description" content="写在前面C++20 引入了协程（coroutine）。它是这套标准里”语言机制最完整、标准库支持最少”的一个特性：编译器只负责把函数改写成可以暂停&#x2F;恢复的形态，至于暂停之后谁来恢复、返回值怎么存、异常怎么传，全部由使用者自己实现。这也是为什么很多人看完语法依然不知道协程该怎么用。 本文从”协程是什么 → 解决什么问题 → 三个关键字 → Await...">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++协程 | zhootoo">
+<meta property="og:url" content="https://zhootoo.github.io/2026/10/01/C%E5%8D%8F%E7%A8%8B/">
+<meta property="og:site_name" content="zhootoo">
+<meta property="og:description" content="写在前面C++20 引入了协程（coroutine）。它是这套标准里”语言机制最完整、标准库支持最少”的一个特性：编译器只负责把函数改写成可以暂停&#x2F;恢复的形态，至于暂停之后谁来恢复、返回值怎么存、异常怎么传，全部由使用者自己实现。这也是为什么很多人看完语法依然不知道协程该怎么用。 本文从”协程是什么 → 解决什么问题 → 三个关键字 → Await...">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-10-01T05:32:20.000Z">
+<meta property="article:modified_time" content="2026-10-21T13:56:00.491Z">
+<meta property="article:author" content="zhootoo">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="协程">
+<meta property="article:tag" content="多线程">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://zhootoo.github.io/2026/10/01/C%E5%8D%8F%E7%A8%8B/">
+
+<link rel="icon" href="/images/favicon.png" type="image/png">
+
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"C++协程","name":"C++协程 | zhootoo","description":"写在前面C++20 引入了协程（coroutine）。它是这套标准里”语言机制最完整、标准库支持最少”的一个特性：编译器只负责把函数改写成可以暂停&#x2F;恢复的形态，至于暂停之后谁来恢复、返回值怎么存、异常怎么传，全部由使用者自己实现。这也是为什么很多人看完语法依然不知道协程该怎么用。 本文从”协程是什么 → 解决什么问题 → 三个关键字 → Await...","url":"https://zhootoo.github.io/2026/10/01/C%E5%8D%8F%E7%A8%8B/","inLanguage":"zh-CN","isPartOf":{"@type":"WebSite","name":"zhootoo","url":"https://zhootoo.github.io/"},"mainEntityOfPage":"https://zhootoo.github.io/2026/10/01/C%E5%8D%8F%E7%A8%8B/","datePublished":"2026-10-01T05:32:20.000Z","dateModified":"2026-10-21T13:56:00.491Z","author":{"@type":"Person","name":"zhootoo"},"publisher":{"@type":"Organization","name":"zhootoo"},"keywords":"C++, 多线程, 协程"}</script>
+
+<script>
+  (function () {
+    var accents = { orange: 1, purple: 1, sakura: 1, blue: 1, pink: 1, green: 1, black: 1 };
+    var match = document.cookie.match(/(?:^|;\s*)flatpaper-accent=([^;]+)/);
+    var accent = 'green';
+    if (match) {
+      try { accent = decodeURIComponent(match[1]); } catch (e) {}
+    }
+    if (!accents[accent]) accent = 'green';
+    document.documentElement.setAttribute('data-accent', accent);
+    try {
+      if (localStorage.getItem('flatpaper-mode') === 'dark') {
+        document.documentElement.classList.add('dark-mode');
+      }
+    } catch (e) {}
+  })();
+</script>
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css">
+<script defer src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+
+
+  
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+<body
+  class="is-post tag-style-tape bg-style-default"
+  data-default-accent="green"
+  data-code-theme="simple"
+  data-note-style="sticky"
+  data-note-icons="on"
+  data-button-style="circle"
+  data-strong-accent="on"
+>
+  
+    <div class="page-grain"></div>
+  
+  <svg width="0" height="0" style="position:absolute;z-index:-1;" aria-hidden="true">
+    <defs>
+      <filter id="paper-edge" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.04" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </defs>
+  </svg>
+  
+  <header class="site-header">
+  
+  <button class="icon-button js-sidebar-toggle sidebar-toggle" type="button" aria-label="打开侧边栏" aria-controls="paper-sidebar-drawer" aria-expanded="false">
+    
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-menu"></use></svg>
+
+  </button>
+
+  <div class="brand">
+    <div class="brand-mark-wrapper">
+      
+        <button class="brand-mark" type="button" aria-label="打开站点导航" aria-haspopup="true" aria-expanded="false" aria-controls="brand-nav-menu">
+          
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-grid flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-layout-grid"></use></svg>
+
+        </button>
+        <div class="brand-nav-menu" id="brand-nav-menu" role="menu">
+          
+            <div class="brand-nav-group">
+              <div class="brand-nav-title">我的导航</div>
+              
+                <a role="menuitem" href="https://github.com/zhootoo" target="_blank" rel="noopener noreferrer">
+                  
+                    
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 496 512" fill="currentColor" class="lucide lucide-github flatpaper-icon flatpaper-icon--fa-brands" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-fa-brands-github"></use></svg>
+
+                  
+                  <span>GitHub</span>
+                </a>
+              
+            </div>
+          
+            <div class="brand-nav-group">
+              <div class="brand-nav-title">站内</div>
+              
+                <a role="menuitem" href="/" target="_blank" rel="noopener noreferrer">
+                  
+                    
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-house flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-house"></use></svg>
+
+                  
+                  <span>首页</span>
+                </a>
+              
+                <a role="menuitem" href="/about/" target="_blank" rel="noopener noreferrer">
+                  
+                    
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-user"></use></svg>
+
+                  
+                  <span>关于</span>
+                </a>
+              
+            </div>
+          
+        </div>
+      
+    </div>
+    <a class="brand-text" href="/">zhootoo</a>
+  </div>
+
+  <nav class="site-nav" aria-label="主导航">
+    
+      
+        <a class="site-nav-link " href="/">
+          
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-house flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-house"></use></svg>
+
+          <span>首页</span>
+        </a>
+      
+    
+      
+        <a class="site-nav-link " href="/about/">
+          
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-user"></use></svg>
+
+          <span>关于</span>
+        </a>
+      
+    
+      
+        <div class="site-nav-item has-children">
+          <button class="site-nav-link site-nav-parent" type="button" aria-haspopup="true" aria-expanded="false">
+            
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-folder"></use></svg>
+
+            <span>文章</span>
+          </button>
+          <div class="site-nav-menu" role="menu">
+            
+              <a role="menuitem" class="" href="/categories/">
+                
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-folder"></use></svg>
+
+                <span>分类</span>
+              </a>
+            
+              <a role="menuitem" class="" href="/tags/">
+                
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tag flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-tag"></use></svg>
+
+                <span>标签</span>
+              </a>
+            
+              <a role="menuitem" class="" href="/archives/">
+                
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-archive flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-archive"></use></svg>
+
+                <span>归档</span>
+              </a>
+            
+          </div>
+        </div>
+      
+    
+  </nav>
+
+  <div class="header-tools">
+    <button class="icon-button js-search-open" type="button" aria-label="搜索文章">
+      
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-search"></use></svg>
+
+    </button>
+    <div class="accent-picker">
+      <button class="icon-button accent-toggle" type="button" aria-label="选择主题色" title="选择主题色" aria-haspopup="true" aria-expanded="false" aria-controls="accent-menu">
+        
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-palette flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-palette"></use></svg>
+
+      </button>
+      <div class="accent-menu" id="accent-menu" role="menu" aria-label="主题色">
+        <button type="button" class="accent-option" role="menuitemradio" aria-label="橙色" aria-checked="false" data-accent-option="orange">
+          <span class="accent-swatch accent-swatch--orange" aria-hidden="true"></span>
+        </button>
+        <button type="button" class="accent-option" role="menuitemradio" aria-label="紫色" aria-checked="false" data-accent-option="purple">
+          <span class="accent-swatch accent-swatch--purple" aria-hidden="true"></span>
+        </button>
+        <button type="button" class="accent-option" role="menuitemradio" aria-label="樱花粉" aria-checked="false" data-accent-option="sakura">
+          <span class="accent-swatch accent-swatch--sakura" aria-hidden="true"></span>
+        </button>
+        <button type="button" class="accent-option" role="menuitemradio" aria-label="蓝色" aria-checked="false" data-accent-option="blue">
+          <span class="accent-swatch accent-swatch--blue" aria-hidden="true"></span>
+        </button>
+        <button type="button" class="accent-option" role="menuitemradio" aria-label="粉色" aria-checked="false" data-accent-option="pink">
+          <span class="accent-swatch accent-swatch--pink" aria-hidden="true"></span>
+        </button>
+        <button type="button" class="accent-option" role="menuitemradio" aria-label="绿色" aria-checked="false" data-accent-option="green">
+          <span class="accent-swatch accent-swatch--green" aria-hidden="true"></span>
+        </button>
+        <button type="button" class="accent-option" role="menuitemradio" aria-label="黑色" aria-checked="false" data-accent-option="black">
+          <span class="accent-swatch accent-swatch--black" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+    <button class="theme-toggle" type="button" aria-label="切换颜色模式">
+      <span class="theme-icon theme-icon--sun">
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-sun"></use></svg>
+</span>
+      <span class="theme-icon theme-icon--moon">
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-moon"></use></svg>
+</span>
+    </button>
+  </div>
+</header>
+
+
+  
+  <main class="paper-shell paper-shell--article">
+    
+
+<aside id="paper-sidebar-drawer" class="paper-sidebar paper-sidebar--right" aria-label="侧边栏">
+  <div class="drawer-toolbar" aria-label="侧边栏工具">
+    <div class="drawer-accent-options" role="group" aria-label="主题色">
+      <button type="button" class="accent-option" aria-label="橙色" aria-pressed="false" data-accent-option="orange">
+        <span class="accent-swatch accent-swatch--orange" aria-hidden="true"></span>
+      </button>
+      <button type="button" class="accent-option" aria-label="紫色" aria-pressed="false" data-accent-option="purple">
+        <span class="accent-swatch accent-swatch--purple" aria-hidden="true"></span>
+      </button>
+      <button type="button" class="accent-option" aria-label="樱花粉" aria-pressed="false" data-accent-option="sakura">
+        <span class="accent-swatch accent-swatch--sakura" aria-hidden="true"></span>
+      </button>
+      <button type="button" class="accent-option" aria-label="蓝色" aria-pressed="false" data-accent-option="blue">
+        <span class="accent-swatch accent-swatch--blue" aria-hidden="true"></span>
+      </button>
+      <button type="button" class="accent-option" aria-label="粉色" aria-pressed="false" data-accent-option="pink">
+        <span class="accent-swatch accent-swatch--pink" aria-hidden="true"></span>
+      </button>
+      <button type="button" class="accent-option" aria-label="绿色" aria-pressed="false" data-accent-option="green">
+        <span class="accent-swatch accent-swatch--green" aria-hidden="true"></span>
+      </button>
+      <button type="button" class="accent-option" aria-label="黑色" aria-pressed="false" data-accent-option="black">
+        <span class="accent-swatch accent-swatch--black" aria-hidden="true"></span>
+      </button>
+    </div>
+    <button class="icon-button drawer-close js-sidebar-close" type="button" aria-label="关闭侧边栏">
+      
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-x"></use></svg>
+
+    </button>
+  </div>
+
+  <section class="side-card nav-card">
+    <nav class="site-nav-drawer" aria-label="移动端导航">
+      
+        
+          <a class="" href="/">
+            
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-house flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-house"></use></svg>
+
+            <span>首页</span>
+          </a>
+        
+      
+        
+          <a class="" href="/about/">
+            
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-user"></use></svg>
+
+            <span>关于</span>
+          </a>
+        
+      
+        
+          <div class="drawer-nav-group">
+            <button class="drawer-nav-parent" type="button" aria-expanded="false">
+              
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-folder"></use></svg>
+
+              <span>文章</span>
+            </button>
+            <div class="drawer-nav-children">
+              
+                <a class="" href="/categories/">
+                  
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-folder"></use></svg>
+
+                  <span>分类</span>
+                </a>
+              
+                <a class="" href="/tags/">
+                  
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tag flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-tag"></use></svg>
+
+                  <span>标签</span>
+                </a>
+              
+                <a class="" href="/archives/">
+                  
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-archive flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-archive"></use></svg>
+
+                  <span>归档</span>
+                </a>
+              
+            </div>
+          </div>
+        
+      
+    </nav>
+  </section>
+
+  <section class="side-card profile-card">
+    
+      <div class="avatar avatar--image">
+        <img src="/images/avatar.jpg" alt="zhootoo" loading="lazy" referrerpolicy="no-referrer">
+      </div>
+    
+    <h3>zhootoo</h3>
+    <p class="profile-role">Software Engineer</p>
+    <p>这是我的个人博客，用于记录技术学习、生活点滴与各种有趣的内容。</p>
+    
+    <div class="socials">
+      
+        <a href="https://github.com/zhootoo" target="_blank" rel="noopener" aria-label="GitHub" data-tooltip="GitHub">
+          
+            
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 496 512" fill="currentColor" class="lucide lucide-github flatpaper-icon flatpaper-icon--fa-brands" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-fa-brands-github"></use></svg>
+
+          
+        </a>
+      
+        <a href="mailto:1403068202@qq.com" target="_blank" rel="noopener" aria-label="Email" data-tooltip="Email">
+          
+            
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-mail"></use></svg>
+
+          
+        </a>
+      
+      
+    </div>
+  </section>
+
+  
+    <section class="side-card brand-link-card" aria-label="站点链接">
+      
+        <div class="brand-link-group">
+          <div class="brand-link-title">我的导航</div>
+          <div class="brand-link-list">
+            
+              <a href="https://github.com/zhootoo" target="_blank" rel="noopener noreferrer">
+                
+                  
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 496 512" fill="currentColor" class="lucide lucide-github flatpaper-icon flatpaper-icon--fa-brands" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-fa-brands-github"></use></svg>
+
+                
+                <span>GitHub</span>
+              </a>
+            
+          </div>
+        </div>
+      
+        <div class="brand-link-group">
+          <div class="brand-link-title">站内</div>
+          <div class="brand-link-list">
+            
+              <a href="/" target="_blank" rel="noopener noreferrer">
+                
+                  
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-house flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-house"></use></svg>
+
+                
+                <span>首页</span>
+              </a>
+            
+              <a href="/about/" target="_blank" rel="noopener noreferrer">
+                
+                  
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-user"></use></svg>
+
+                
+                <span>关于</span>
+              </a>
+            
+          </div>
+        </div>
+      
+    </section>
+  
+
+  
+    <div class="post-sticky-stack">
+      <section class="side-card toc-card">
+        <header class="toc-card__head">
+          <h2>
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-table-of-contents flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-table-of-contents"></use></svg>
+文章目录</h2>
+          <button type="button" class="toc-toggle-all" data-action="toggle-toc" aria-pressed="false" aria-label="展开全部目录" title="展开全部目录">
+            
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-chevron-down"></use></svg>
+
+          </button>
+        </header>
+        <div class="toc-content">
+          
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E4%BB%80%E4%B9%88%E6%98%AF%E5%8D%8F%E7%A8%8B"><span class="toc-text">一、什么是协程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E6%99%AE%E9%80%9A%E5%87%BD%E6%95%B0%E4%B8%8E%E5%8D%8F%E7%A8%8B%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">1.1 普通函数与协程的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E6%9C%89%E6%A0%88%E5%8D%8F%E7%A8%8B%E4%B8%8E%E6%97%A0%E6%A0%88%E5%8D%8F%E7%A8%8B"><span class="toc-text">1.2 有栈协程与无栈协程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E5%8D%8F%E7%A8%8B%E5%B8%A7%E9%87%8C%E5%88%B0%E5%BA%95%E5%AD%98%E4%BA%86%E4%BB%80%E4%B9%88"><span class="toc-text">1.3 协程帧里到底存了什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-%E5%8D%8F%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-text">1.4 协程与线程的关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-5-%E4%B8%89%E7%A7%8D%E5%B9%B6%E5%8F%91%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AF%B9%E6%AF%94"><span class="toc-text">1.5 三种并发模型的对比</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E5%8D%8F%E7%A8%8B%E8%A7%A3%E5%86%B3%E4%BA%86%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98"><span class="toc-text">二、协程解决了什么问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E5%9B%9E%E8%B0%83%E5%9C%B0%E7%8B%B1"><span class="toc-text">2.1 回调地狱</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E6%89%8B%E5%86%99%E7%8A%B6%E6%80%81%E6%9C%BA"><span class="toc-text">2.2 手写状态机</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E5%90%8C%E6%AD%A5%E7%9A%84%E5%86%99%E6%B3%95%EF%BC%8C%E5%BC%82%E6%AD%A5%E7%9A%84%E6%89%A7%E8%A1%8C"><span class="toc-text">2.3 同步的写法，异步的执行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-%E5%8D%8F%E7%A8%8B%E4%B8%8D%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88"><span class="toc-text">2.4 协程不解决什么</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81C-20-%E5%8D%8F%E7%A8%8B%E7%9A%84%E4%B8%89%E4%B8%AA%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-text">三、C++20 协程的三个关键字</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-co-await-co-yield-co-return"><span class="toc-text">3.1 co_await &#x2F; co_yield &#x2F; co_return</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E7%BC%96%E8%AF%91%E5%99%A8%E6%8A%8A%E5%8D%8F%E7%A8%8B%E6%94%B9%E5%86%99%E6%88%90%E4%BA%86%E4%BB%80%E4%B9%88"><span class="toc-text">3.2 编译器把协程改写成了什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E5%8D%8F%E7%A8%8B%E7%9A%84%E4%B8%80%E7%94%9F"><span class="toc-text">3.3 协程的一生</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81co-await-%E4%B8%8E-Awaitable"><span class="toc-text">四、co_await 与 Awaitable</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-Awaitable-%E4%B8%89%E4%BB%B6%E5%A5%97"><span class="toc-text">4.1 Awaitable 三件套</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-await-suspend-%E7%9A%84%E4%B8%89%E7%A7%8D%E8%BF%94%E5%9B%9E%E5%80%BC"><span class="toc-text">4.2 await_suspend 的三种返回值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-co-await-%E7%9A%84%E5%AE%8C%E6%95%B4%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="toc-text">4.3 co_await 的完整执行流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AA%E5%BC%82%E6%AD%A5%E8%AF%BB%E6%93%8D%E4%BD%9C"><span class="toc-text">4.4 手写一个异步读操作</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81promise-type%EF%BC%9A%E5%8D%8F%E7%A8%8B%E7%9A%84%E6%8E%A7%E5%88%B6%E4%B8%AD%E6%9E%A2"><span class="toc-text">五、promise_type：协程的控制中枢</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-promise-type-%E5%BF%85%E9%A1%BB%E6%8F%90%E4%BE%9B%E7%9A%84%E6%8E%A5%E5%8F%A3"><span class="toc-text">5.1 promise_type 必须提供的接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E7%BB%99%E5%8D%8F%E7%A8%8B%E4%B8%80%E4%B8%AA%E8%BF%94%E5%9B%9E%E7%B1%BB%E5%9E%8B%EF%BC%9ATask"><span class="toc-text">5.2 给协程一个返回类型：Task&lt;T&gt;</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-final-suspend-%E4%B8%8E%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E9%99%B7%E9%98%B1"><span class="toc-text">5.3 final_suspend 与生命周期陷阱</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-4-%E5%8D%8F%E7%A8%8B%E5%A5%97%E5%8D%8F%E7%A8%8B%EF%BC%9Aco-await-%E4%B8%80%E4%B8%AA-Task"><span class="toc-text">5.4 协程套协程：co_await 一个 Task</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81co-return%EF%BC%9A%E8%AE%A9%E5%8D%8F%E7%A8%8B%E8%BF%94%E5%9B%9E%E5%80%BC"><span class="toc-text">六、co_return：让协程返回值</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-return-value-%E4%B8%8E-return-void"><span class="toc-text">6.1 return_value 与 return_void</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86"><span class="toc-text">6.2 异常处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-%E5%AE%8C%E6%95%B4%E7%A4%BA%E4%BE%8B%EF%BC%9A%E7%94%A8%E5%8D%8F%E7%A8%8B%E9%87%8D%E5%86%99%E5%BC%82%E6%AD%A5%E6%B1%82%E5%92%8C"><span class="toc-text">6.3 完整示例：用协程重写异步求和</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81co-yield%EF%BC%9A%E7%94%9F%E6%88%90%E5%99%A8"><span class="toc-text">七、co_yield：生成器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-co-yield-%E7%9A%84%E6%9C%AC%E8%B4%A8"><span class="toc-text">7.1 co_yield 的本质</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA-Generator"><span class="toc-text">7.2 实现一个 Generator</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-3-%E4%B8%BA%E4%BB%80%E4%B9%88%E2%80%9D%E6%83%B0%E6%80%A7%E2%80%9D%E5%BE%88%E9%87%8D%E8%A6%81"><span class="toc-text">7.3 为什么”惰性”很重要</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E6%80%A7%E8%83%BD%E3%80%81%E9%99%B7%E9%98%B1%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5"><span class="toc-text">八、性能、陷阱与工程实践</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-%E4%B8%80%E6%AC%A1%E5%8D%8F%E7%A8%8B%E7%9A%84%E5%BC%80%E9%94%80"><span class="toc-text">8.1 一次协程的开销</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-2-%E5%A0%86%E5%88%86%E9%85%8D%E4%B8%8E-HALO-%E4%BC%98%E5%8C%96"><span class="toc-text">8.2 堆分配与 HALO 优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-3-%E5%B8%B8%E8%A7%81%E9%99%B7%E9%98%B1%E6%B8%85%E5%8D%95"><span class="toc-text">8.3 常见陷阱清单</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-4-%E5%8D%8F%E7%A8%8B%E5%87%BD%E6%95%B0%E7%9A%84%E9%99%90%E5%88%B6"><span class="toc-text">8.4 协程函数的限制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-5-%E7%94%9F%E6%80%81%E4%B8%8E%E9%80%89%E5%9E%8B"><span class="toc-text">8.5 生态与选型</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B9%9D%E3%80%81%E5%B0%8F%E7%BB%93"><span class="toc-text">九、小结</span></a></li></ol>
+          
+        </div>
+      </section>
+      
+
+
+    </div>
+  
+
+  
+
+</aside>
+
+    <section class="paper-main">
+      
+
+<div class="article-tape-wrap">
+<span class="tape tape--top-right" aria-hidden="true"></span>
+<article class="article-paper">
+  
+  <header class="article-header">
+    
+      <a class="label-pill" href="/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">
+        
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-folder"></use></svg>
+
+        多线程
+      </a>
+    
+    <h1>C++协程</h1>
+    <div class="meta-line meta-line--article">
+      <span class="meta-date">
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-calendar"></use></svg>
+2026-10-01</span>
+      
+        <span class="meta-tags">
+          
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tag flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-tag"></use></svg>
+
+          <a class="meta-tag-link" href="/tags/C/">#C++</a><a class="meta-tag-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">#多线程</a><a class="meta-tag-link" href="/tags/%E5%8D%8F%E7%A8%8B/">#协程</a>
+        </span>
+      
+    </div>
+  </header>
+
+  
+
+
+  <div class="article-content">
+    <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>C++20 引入了协程（coroutine）。它是这套标准里”语言机制最完整、标准库支持最少”的一个特性：<br>编译器只负责把函数改写成可以暂停&#x2F;恢复的形态，<strong>至于暂停之后谁来恢复、返回值怎么存、异常怎么传，<br>全部由使用者自己实现</strong>。这也是为什么很多人看完语法依然不知道协程该怎么用。</p>
+<p>本文从”协程是什么 → 解决什么问题 → 三个关键字 → Awaitable → promise_type → 实战”这条主线展开，<br>所有示例代码都可以直接编译运行（<code>g++ -std=c++20</code> &#x2F; <code>clang++ -std=c++20</code> &#x2F; MSVC <code>/std:c++20</code>）。</p>
+<hr>
+<h2 id="一、什么是协程"><a href="#一、什么是协程" class="headerlink" title="一、什么是协程"></a>一、什么是协程</h2><h3 id="1-1-普通函数与协程的区别"><a href="#1-1-普通函数与协程的区别" class="headerlink" title="1.1 普通函数与协程的区别"></a>1.1 普通函数与协程的区别</h3><p>普通函数的生命周期是”调用 → 执行 → 返回 → 栈帧销毁”，中间没有任何可以”定格”的时刻。<br>你无法在函数执行到一半时把它冻住、去干别的事、再从冻住的地方接着跑。</p>
+<p>协程则是一个<strong>可以暂停和恢复执行的函数</strong>。</p>
+<ul>
+<li>普通函数：状态完全依赖线程栈，返回即销毁，天然与”这一次调用”绑定。</li>
+<li>协程：运行状态需要保存在一块由编译器生成的<strong>协程帧（coroutine frame）<strong>里，这块内存通常在</strong>堆</strong>上分配。<br>恢复协程时，把帧里的状态重新装载起来继续执行；挂起时，把当前状态写回帧里。</li>
+</ul>
+<p>所以协程是<strong>和线程解耦</strong>的：线程 A 把协程跑到一半挂起，线程 A 销毁了，线程 B 依然可以恢复这个协程并接着上次的<br>状态继续执行（前提是恢复时机的同步由调用者负责）。</p>
+<h3 id="1-2-有栈协程与无栈协程"><a href="#1-2-有栈协程与无栈协程" class="headerlink" title="1.2 有栈协程与无栈协程"></a>1.2 有栈协程与无栈协程</h3><table>
+<thead>
+<tr>
+<th></th>
+<th>有栈协程（stackful）</th>
+<th>无栈协程（stackless，C++20）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>代表实现</td>
+<td><code>ucontext</code>、<code>boost.context</code>、libco、Go goroutine</td>
+<td>C++20 coroutine、Rust async、JS async</td>
+</tr>
+<tr>
+<td>独立栈</td>
+<td>每个协程有自己的栈（通常 KB 级）</td>
+<td>没有独立栈，只保存协程帧</td>
+</tr>
+<tr>
+<td>能挂起的位置</td>
+<td>任意函数调用深度</td>
+<td>只能在协程函数体的 <code>co_await</code> 点</td>
+</tr>
+<tr>
+<td>切换代价</td>
+<td>保存&#x2F;切换整个栈指针</td>
+<td>保存少量寄存器 + 跳转</td>
+</tr>
+<tr>
+<td>内存占用</td>
+<td>大（协程数 × 栈大小）</td>
+<td>小（与局部变量数量相关）</td>
+</tr>
+<tr>
+<td>传染性</td>
+<td>无，普通函数也能被挂起</td>
+<td>有，<code>co_await</code> 会沿着调用链”传染”</td>
+</tr>
+</tbody></table>
+<p>“无栈”并不是真的不用栈，而是<strong>协程不拥有自己的栈</strong>——它在哪个线程上被恢复，就用那个线程的栈。<br>代价是：你无法在 <code>co_await</code> 之外的地方（比如一个普通函数的中间）挂起；<br>想让”下层函数”也能挂起，下层函数自己也必须写成协程，并在上层 <code>co_await</code> 它。</p>
+<h3 id="1-3-协程帧里到底存了什么"><a href="#1-3-协程帧里到底存了什么" class="headerlink" title="1.3 协程帧里到底存了什么"></a>1.3 协程帧里到底存了什么</h3><p>编译器为每个协程生成一个结构体，大致包含：</p>
+<ul>
+<li><strong>promise 对象</strong>：协程的”控制中枢”，见第五章；</li>
+<li><strong>形参</strong>：按值拷贝进帧（引用形参拷贝的是引用本身）；</li>
+<li><strong>跨越挂起点的局部变量</strong>：<code>int total</code> 这类在 <code>co_await</code> 前后都要用的变量；</li>
+<li><strong>awaiter 临时对象</strong>：<code>co_await</code> 表达式产生的 awaiter 必须活到恢复之后，否则恢复时就是野指针；</li>
+<li><strong>挂起点索引</strong>：恢复时根据它决定”从哪继续执行”；</li>
+<li><strong><code>resume</code> &#x2F; <code>destroy</code> 函数指针</strong>：不同类型擦除后的 <code>coroutine_handle</code> 靠它调用真正的恢复逻辑。</li>
+</ul>
+<p>因为帧大小在<strong>编译期就完全确定</strong>，所以只需要一次 <code>operator new(size)</code> 就能分配出来（也可以由你在<br><code>promise_type</code> 里重载 <code>operator new</code> 走内存池）。</p>
+<p>同时编译器还会生成一个”恢复函数”，形如：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">Frame_resume</span><span class="params">(Frame* frame)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">switch</span> (frame-&gt;suspend_point)   <span class="comment">// 上次挂在哪里</span></span><br><span class="line">    &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">0</span>: <span class="keyword">goto</span> resume_point_0;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">1</span>: <span class="keyword">goto</span> resume_point_1;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以及一个”销毁函数”，负责析构<strong>已经构造过</strong>的局部变量和 promise，然后释放帧内存。<br>这就是为什么帧里必须记录挂起点的索引——它同时决定了析构时要清理哪些对象。</p>
+<h3 id="1-4-协程与线程的关系"><a href="#1-4-协程与线程的关系" class="headerlink" title="1.4 协程与线程的关系"></a>1.4 协程与线程的关系</h3><ul>
+<li>协程没有线程亲和性（thread affinity）：可以在 A 线程挂起、在 B 线程恢复。</li>
+<li>但<strong>同一时刻只能有一个线程在恢复它</strong>。两个线程同时 <code>resume()</code> 同一个协程是数据竞争，属于未定义行为。</li>
+<li>挂起期间协程帧是完全”静止”的，读写它不需要加锁；但”何时恢复”这件事必须由你的调度逻辑保证顺序，<br>否则 <code>await_resume()</code> 读到的可能是还没写完的数据。</li>
+</ul>
+<p>换句话说：<strong>协程负责”状态保存”，线程&#x2F;调度器负责”什么时候跑”</strong>。这两件事是正交的。</p>
+<h3 id="1-5-三种并发模型的对比"><a href="#1-5-三种并发模型的对比" class="headerlink" title="1.5 三种并发模型的对比"></a>1.5 三种并发模型的对比</h3><table>
+<thead>
+<tr>
+<th></th>
+<th>线程</th>
+<th>回调&#x2F;事件驱动</th>
+<th>C++20 协程</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>代码形态</td>
+<td>顺序，阻塞</td>
+<td>分散的回调</td>
+<td>顺序，可挂起</td>
+</tr>
+<tr>
+<td>切换开销</td>
+<td>内核调度，微秒级</td>
+<td>极低</td>
+<td>用户态跳转，纳秒级</td>
+</tr>
+<tr>
+<td>单机数量级</td>
+<td>千级</td>
+<td>万级以上</td>
+<td>万级以上</td>
+</tr>
+<tr>
+<td>栈&#x2F;内存</td>
+<td>默认 MB 级栈</td>
+<td>无</td>
+<td>协程帧，几十~几百字节</td>
+</tr>
+<tr>
+<td>表达复杂流程</td>
+<td>容易</td>
+<td>很难</td>
+<td>容易</td>
+</tr>
+<tr>
+<td>数据竞争</td>
+<td>需要大量同步原语</td>
+<td>单线程模型下简单</td>
+<td>单线程模型下简单</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="二、协程解决了什么问题"><a href="#二、协程解决了什么问题" class="headerlink" title="二、协程解决了什么问题"></a>二、协程解决了什么问题</h2><h3 id="2-1-回调地狱"><a href="#2-1-回调地狱" class="headerlink" title="2.1 回调地狱"></a>2.1 回调地狱</h3><p>先看一个回调式的异步读：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;chrono&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;functional&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;future&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;memory&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;thread&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;utility&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">IntReader</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">static</span> <span class="type">void</span> <span class="title">BeginRead</span><span class="params">(std::function&lt;<span class="type">void</span>(<span class="type">int</span>)&gt; callback)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        std::<span class="built_in">thread</span>([cb = std::<span class="built_in">move</span>(callback)] &#123;</span><br><span class="line">            std::this_thread::<span class="built_in">sleep_for</span>(std::chrono::<span class="built_in">seconds</span>(<span class="number">1</span>)); <span class="comment">// 模拟耗时 IO</span></span><br><span class="line">            <span class="built_in">cb</span>(<span class="number">10</span>);</span><br><span class="line">        &#125;).<span class="built_in">detach</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">PrintInt</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    IntReader::<span class="built_in">BeginRead</span>([](<span class="type">int</span> value) &#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;value: &quot;</span> &lt;&lt; value &lt;&lt; std::endl;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注：<code>PrintInt</code> 返回后主线程若立刻退出，进程结束会把后台线程一起带走，这里省略了等待逻辑。</p>
+</blockquote>
+<p>只读一次还好。如果现在要<strong>异步读三个值，求它们的和</strong>，代码就会变成这样：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">PrintSum</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 回调版必须把状态放到堆上保活：回调到来时 PrintSum 早就返回了</span></span><br><span class="line">    <span class="keyword">auto</span> sum  = std::<span class="built_in">make_shared</span>&lt;<span class="type">int</span>&gt;(<span class="number">0</span>);</span><br><span class="line">    <span class="keyword">auto</span> done = std::make_shared&lt;std::promise&lt;<span class="type">void</span>&gt;&gt;();</span><br><span class="line"></span><br><span class="line">    IntReader::<span class="built_in">BeginRead</span>([sum, done](<span class="type">int</span> a) &#123;</span><br><span class="line">        *sum += a;</span><br><span class="line">        IntReader::<span class="built_in">BeginRead</span>([sum, done](<span class="type">int</span> b) &#123;</span><br><span class="line">            *sum += b;</span><br><span class="line">            IntReader::<span class="built_in">BeginRead</span>([sum, done](<span class="type">int</span> c) &#123;</span><br><span class="line">                *sum += c;</span><br><span class="line">                std::cout &lt;&lt; <span class="string">&quot;sum: &quot;</span> &lt;&lt; *sum &lt;&lt; std::endl;</span><br><span class="line">                done-&gt;<span class="built_in">set_value</span>();</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    done-&gt;<span class="built_in">get_future</span>().<span class="built_in">wait</span>(); <span class="comment">// 还得自己想办法把&quot;异步&quot;兜回&quot;等待&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这就是所谓的<strong>回调地狱（callback hell）</strong>。它的问题不只是”丑”：</p>
+<ol>
+<li><strong>嵌套层数随步骤数线性增长</strong>，三步已经三层，三十步不可维护；</li>
+<li><strong>状态生命周期要手工管理</strong>：<code>sum</code> 必须 <code>shared_ptr</code> 保活，稍不注意就是悬空引用；</li>
+<li><strong>错误处理到处重复</strong>：每个回调都要写一遍错误分支，且无法用一个 <code>try/catch</code> 覆盖整条链路；</li>
+<li><strong>无法表达循环</strong>：想”读 N 次”，只能靠递归或额外状态；</li>
+<li><strong>取消、超时、并发控制</strong>只能靠外部标志位层层传递。</li>
+</ol>
+<h3 id="2-2-手写状态机"><a href="#2-2-手写状态机" class="headerlink" title="2.2 手写状态机"></a>2.2 手写状态机</h3><p>另一条路是把流程拆成显式状态机：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">SumStateMachine</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">Start</span><span class="params">()</span> </span>&#123; <span class="built_in">BeginReadA</span>(); &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">BeginReadA</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        IntReader::<span class="built_in">BeginRead</span>([<span class="keyword">this</span>](<span class="type">int</span> v) &#123; a_ = v; <span class="built_in">BeginReadB</span>(); &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">BeginReadB</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        IntReader::<span class="built_in">BeginRead</span>([<span class="keyword">this</span>](<span class="type">int</span> v) &#123; b_ = v; <span class="built_in">BeginReadC</span>(); &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">BeginReadC</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        IntReader::<span class="built_in">BeginRead</span>([<span class="keyword">this</span>](<span class="type">int</span> v) &#123;</span><br><span class="line">            std::cout &lt;&lt; <span class="string">&quot;sum: &quot;</span> &lt;&lt; a_ + b_ + v &lt;&lt; std::endl;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> a_ = <span class="number">0</span>;</span><br><span class="line">    <span class="type">int</span> b_ = <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>状态机把”每一步的结果”变成了成员变量，但流程被切碎到多个函数里，<br><strong>读代码的人需要自己在大脑里把这些碎片拼回原本的顺序</strong>。分支一多（比如”失败重试””超时就换源”），<br>状态数量会指数级膨胀。</p>
+<h3 id="2-3-同步的写法，异步的执行"><a href="#2-3-同步的写法，异步的执行" class="headerlink" title="2.3 同步的写法，异步的执行"></a>2.3 同步的写法，异步的执行</h3><p>用协程重写同一段逻辑：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Task&lt;<span class="type">int</span>&gt; <span class="title">PrintSum</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> total = <span class="number">0</span>;</span><br><span class="line">    total += <span class="keyword">co_await</span> <span class="built_in">ReadInt</span>();</span><br><span class="line">    total += <span class="keyword">co_await</span> <span class="built_in">ReadInt</span>();</span><br><span class="line">    total += <span class="keyword">co_await</span> <span class="built_in">ReadInt</span>();</span><br><span class="line">    <span class="keyword">co_return</span> total;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>到这里应该能直观感受到区别：<strong>代码是顺序写的，执行是非阻塞的</strong>。<br><code>co_await</code> 的意思是”挂起当前协程，等这个操作完成后再从这里继续”，<br>挂起期间线程并没有被阻塞，可以去跑别的协程。</p>
+<p>这就是协程最核心的价值：<strong>把异步流程的”控制流”重新变回线性</strong>。<br>它也顺带解决了回调版的所有痛点——状态就是普通的局部变量（编译器帮你搬进帧里），<br>错误处理就是普通的 <code>try/catch</code>，循环就是普通的 <code>for</code>。</p>
+<h3 id="2-4-协程不解决什么"><a href="#2-4-协程不解决什么" class="headerlink" title="2.4 协程不解决什么"></a>2.4 协程不解决什么</h3><ul>
+<li><strong>不是并行计算工具</strong>：协程是”并发（concurrent）”不是”并行（parallel）”，一个线程上的协程还是串行执行。<br>CPU 密集任务请用线程池。</li>
+<li><strong>不会自动变快</strong>：它优化的是代码结构和内存占用，不是吞吐本身。</li>
+<li><strong>不能脱离调度器</strong>：没人 <code>resume()</code>，协程永远停在原地。</li>
+<li><strong>不是线程的替代品</strong>：多核并行仍然要靠线程。</li>
+</ul>
+<hr>
+<h2 id="三、C-20-协程的三个关键字"><a href="#三、C-20-协程的三个关键字" class="headerlink" title="三、C++20 协程的三个关键字"></a>三、C++20 协程的三个关键字</h2><h3 id="3-1-co-await-co-yield-co-return"><a href="#3-1-co-await-co-yield-co-return" class="headerlink" title="3.1 co_await &#x2F; co_yield &#x2F; co_return"></a>3.1 <code>co_await</code> &#x2F; <code>co_yield</code> &#x2F; <code>co_return</code></h3><p>只要函数体里出现了这三个关键字中的任意一个，这个函数<strong>就自动变成协程</strong><br>（哪怕它只是 <code>co_return;</code> 一下就结束）：</p>
+<table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>含义</th>
+<th>典型用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>co_await expr</code></td>
+<td>挂起，等 <code>expr</code> 表示的操作完成，取回结果</td>
+<td>等待异步 IO、等待另一个协程</td>
+</tr>
+<tr>
+<td><code>co_yield expr</code></td>
+<td>产出一个值并挂起，下次恢复时继续</td>
+<td>生成器、惰性序列</td>
+</tr>
+<tr>
+<td><code>co_return [expr]</code></td>
+<td>结束协程并返回值</td>
+<td>协程的结果</td>
+</tr>
+</tbody></table>
+<p>三者本质上是同一套机制的三层包装：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">co_yield</span> expr;   <span class="comment">// 等价于  co_await promise.yield_value(expr);</span></span><br><span class="line"><span class="keyword">co_return</span> expr;  <span class="comment">// 等价于  promise.return_value(expr); 然后走到 final_suspend</span></span><br><span class="line"><span class="keyword">co_return</span>;       <span class="comment">// 等价于  promise.return_void();     然后走到 final_suspend</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-编译器把协程改写成了什么"><a href="#3-2-编译器把协程改写成了什么" class="headerlink" title="3.2 编译器把协程改写成了什么"></a>3.2 编译器把协程改写成了什么</h3><p>以一个 <code>Task&lt;int&gt;</code> 协程为例，编译器大致会改写成下面的结构（伪代码，省略细节）：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Task&lt;<span class="type">int</span>&gt; <span class="title">SumThree</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// ① 在堆（或栈，见 8.2）上分配协程帧：promise + 形参副本 + 局部变量 + awaiter</span></span><br><span class="line">    <span class="keyword">auto</span>* frame = <span class="keyword">new</span> Frame&#123;&#125;;</span><br><span class="line">    <span class="keyword">auto</span>&amp; promise = frame-&gt;promise;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ② 先拿到返回给调用者的对象，但此时还不会返回</span></span><br><span class="line">    Task&lt;<span class="type">int</span>&gt; ret = promise.<span class="built_in">get_return_object</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ③ 初始挂起点：决定&quot;协程是否立刻开跑&quot;</span></span><br><span class="line">    <span class="keyword">co_await</span> promise.<span class="built_in">initial_suspend</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> total = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// ④ 每个 co_await 变成一个&quot;断点&quot;，索引写进帧里</span></span><br><span class="line">        &#123;</span><br><span class="line">            AsyncRead aw&#123;&#125;;                 <span class="comment">// awaiter 也活在被撑开的帧里</span></span><br><span class="line">            frame-&gt;suspend_point = <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">if</span> (!aw.<span class="built_in">await_ready</span>())</span><br><span class="line">                <span class="keyword">co_await</span> aw.<span class="built_in">await_suspend</span>(frame-&gt;handle);   <span class="comment">// 在这里挂起</span></span><br><span class="line">        <span class="comment">// resume_point_1:  ← 恢复后从这里继续</span></span><br><span class="line">            total += aw.<span class="built_in">await_resume</span>();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// ……另外两次 co_await 同理……</span></span><br><span class="line"></span><br><span class="line">        promise.return_value(total);        <span class="comment">// ⑤ co_return 的落点</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span> (...)</span><br><span class="line">    &#123;</span><br><span class="line">        promise.<span class="built_in">unhandled_exception</span>();      <span class="comment">// ⑥ 统一兜住未捕获的异常</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">co_await</span> promise.final_suspend();       <span class="comment">// ⑦ 终结挂起点</span></span><br><span class="line">    <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>关键点：<strong>协程体被包在 <code>try</code> 块里</strong>，所以协程里抛出的异常一定会走到 <code>unhandled_exception()</code>，<br>由你的 <code>promise_type</code> 决定是存起来、还是直接终止。</p>
+<h3 id="3-3-协程的一生"><a href="#3-3-协程的一生" class="headerlink" title="3.3 协程的一生"></a>3.3 协程的一生</h3><ol>
+<li>分配协程帧（<code>operator new</code>）；</li>
+<li>把形参拷贝进帧；</li>
+<li>构造 promise 对象；</li>
+<li>调用 <code>promise.get_return_object()</code> 得到返回给调用者的对象；</li>
+<li><code>co_await promise.initial_suspend()</code><ul>
+<li>返回 <code>suspend_always</code> → 立刻挂起，控制权回到调用者（<strong>lazy</strong>）</li>
+<li>返回 <code>suspend_never</code> → 继续执行，直到第一个真正的挂起点（<strong>eager</strong>）</li>
+</ul>
+</li>
+<li>执行函数体，遇到 <code>co_await</code> 就按第四章的规则挂起&#x2F;恢复；</li>
+<li>遇到 <code>co_return</code> → <code>return_value()</code> &#x2F; <code>return_void()</code>；遇到异常 → <code>unhandled_exception()</code>；</li>
+<li><code>co_await promise.final_suspend()</code>，停在终结挂起点；</li>
+<li>由持有 <code>coroutine_handle</code> 的人调用 <code>destroy()</code> 释放帧（若 <code>final_suspend</code> 返回 <code>suspend_never</code>，<br>帧会自动销毁，见 5.3 的陷阱）。</li>
+</ol>
+<hr>
+<h2 id="四、co-await-与-Awaitable"><a href="#四、co-await-与-Awaitable" class="headerlink" title="四、co_await 与 Awaitable"></a>四、<code>co_await</code> 与 Awaitable</h2><h3 id="4-1-Awaitable-三件套"><a href="#4-1-Awaitable-三件套" class="headerlink" title="4.1 Awaitable 三件套"></a>4.1 Awaitable 三件套</h3><p><code>co_await</code> 的作用就是”等一等”：暂停协程，等条件满足再回来。<br>但编译器不可能知道”任意一个自定义类型什么时候算完成”，所以它要求被 <code>co_await</code> 的类型遵守一套约定，<br>这个约定叫 <strong>Awaitable</strong>。</p>
+<p>编译器对 <code>co_await expr</code> 的求值顺序是：</p>
+<ol>
+<li>若 <code>promise_type</code> 有 <code>await_transform()</code>，先做 <code>expr = promise.await_transform(expr)</code>；</li>
+<li>若 <code>expr</code> 有 <code>operator co_await()</code>（成员或自由函数），则 <code>awaiter = expr.operator co_await()</code>；</li>
+<li>否则若 <code>expr</code> 本身就是一个 awaiter，则 <code>awaiter = expr</code>；</li>
+<li>否则编译错误。</li>
+</ol>
+<p>而一个 <strong>awaiter</strong> 需要提供三个成员：</p>
+<table>
+<thead>
+<tr>
+<th>成员</th>
+<th>返回值</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>await_ready()</code></td>
+<td><code>bool</code></td>
+<td><code>true</code> 表示”已经就绪，不用挂起”，直接跳到 <code>await_resume()</code></td>
+</tr>
+<tr>
+<td><code>await_suspend(handle)</code></td>
+<td><code>void</code> &#x2F; <code>bool</code> &#x2F; <code>coroutine_handle&lt;Z&gt;</code></td>
+<td>挂起时被调用，负责注册回调、保存 handle、安排”谁来恢复我”</td>
+</tr>
+<tr>
+<td><code>await_resume()</code></td>
+<td>任意类型</td>
+<td>恢复后调用，其返回值就是整个 <code>co_await</code> 表达式的值</td>
+</tr>
+</tbody></table>
+<p><code>std::suspend_always</code> 和 <code>std::suspend_never</code> 就是标准库提供的两个现成 awaiter：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">suspend_always</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">await_ready</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">noexcept</span> </span>&#123; <span class="keyword">return</span> <span class="literal">false</span>; &#125;   <span class="comment">// 永远挂起</span></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">await_suspend</span><span class="params">(std::coroutine_handle&lt;&gt;)</span> <span class="type">const</span> <span class="keyword">noexcept</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">await_resume</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">noexcept</span> </span>&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">suspend_never</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">await_ready</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">noexcept</span> </span>&#123; <span class="keyword">return</span> <span class="literal">true</span>; &#125;    <span class="comment">// 从不挂起</span></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">await_suspend</span><span class="params">(std::coroutine_handle&lt;&gt;)</span> <span class="type">const</span> <span class="keyword">noexcept</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">await_resume</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">noexcept</span> </span>&#123;&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-2-await-suspend-的三种返回值"><a href="#4-2-await-suspend-的三种返回值" class="headerlink" title="4.2 await_suspend 的三种返回值"></a>4.2 <code>await_suspend</code> 的三种返回值</h3><p>这是协程里最容易被忽略、却最重要的细节：</p>
+<table>
+<thead>
+<tr>
+<th>返回类型</th>
+<th>语义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>void</code></td>
+<td>挂起成功后，控制权回到”恢复者”（调用者或调度器），由它决定接下来跑什么</td>
+</tr>
+<tr>
+<td><code>bool</code></td>
+<td><code>true</code> 正常挂起；<code>false</code> <strong>不挂起</strong>，直接执行 <code>await_resume()</code>（常用于”检查后发现已经完成，就不用挂起”）</td>
+</tr>
+<tr>
+<td><code>coroutine_handle&lt;Z&gt;</code></td>
+<td><strong>对称转移（symmetric transfer）</strong>：当前协程挂起，直接把控制权尾调用给 <code>Z</code>，不回到调用者的栈帧。这样”协程 A 恢复协程 B”不会让调用栈无限增长，深层协程链也不会爆栈</td>
+</tr>
+</tbody></table>
+<p>返回 <code>bool</code> 的写法在实现 <code>await_ready()</code> 无法预知的情况下很有用，例如”先尝试加锁，失败才挂起”：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">await_suspend</span><span class="params">(std::coroutine_handle&lt;&gt; h)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (mutex_.try_lock()) <span class="keyword">return</span> <span class="literal">false</span>;   <span class="comment">// 抢到了，不用挂起</span></span><br><span class="line">    waiters_.<span class="built_in">push_back</span>(h);                 <span class="comment">// 抢不到，登记后挂起</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-3-co-await-的完整执行流程"><a href="#4-3-co-await-的完整执行流程" class="headerlink" title="4.3 co_await 的完整执行流程"></a>4.3 <code>co_await</code> 的完整执行流程</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">co_await expr</span><br><span class="line">   │</span><br><span class="line">   ├─ 求 awaiter（await_transform / operator co_await / 自身）</span><br><span class="line">   │</span><br><span class="line">   ├─ await_ready() == true ──────────────────────► 直接执行 await_resume()，不挂起</span><br><span class="line">   │</span><br><span class="line">   └─ await_ready() == false</span><br><span class="line">          │</span><br><span class="line">          └─ r = await_suspend(handle)</span><br><span class="line">                 ├─ void      → 协程挂起，控制权回到调用者/调度器</span><br><span class="line">                 ├─ false     → 不挂起，继续执行 await_resume()</span><br><span class="line">                 └─ handle Z  → 挂起当前协程，跳到 Z 继续执行（对称转移）</span><br><span class="line">                                    │</span><br><span class="line">                       某个线程调用 handle.resume()</span><br><span class="line">                                    │</span><br><span class="line">                              ──► await_resume() 求值，作为 co_await 的结果</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-4-手写一个异步读操作"><a href="#4-4-手写一个异步读操作" class="headerlink" title="4.4 手写一个异步读操作"></a>4.4 手写一个异步读操作</h3><p>下面把 2.1 里的 <code>IntReader</code> 改造成可被 <code>co_await</code> 的 awaiter：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;chrono&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;coroutine&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;thread&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AsyncRead</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">await_ready</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">noexcept</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;   <span class="comment">// 数据还没读到，必须挂起</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">await_suspend</span><span class="params">(std::coroutine_handle&lt;&gt; h)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// 真实项目里这里是 epoll/io_uring/线程池的任务投递；</span></span><br><span class="line">        <span class="comment">// 这里用一个 detach 线程模拟耗时 IO</span></span><br><span class="line">        std::<span class="built_in">thread</span>([<span class="keyword">this</span>, h] &#123;</span><br><span class="line">            std::this_thread::<span class="built_in">sleep_for</span>(std::chrono::<span class="built_in">seconds</span>(<span class="number">1</span>));</span><br><span class="line">            value_ = <span class="number">10</span>;</span><br><span class="line">            h.<span class="built_in">resume</span>();          <span class="comment">// 数据就绪，恢复协程</span></span><br><span class="line">        &#125;).<span class="built_in">detach</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">await_resume</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">noexcept</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> value_;           <span class="comment">// 成为 co_await 表达式的结果</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="type">int</span> value_ = <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>三点说明：</p>
+<ul>
+<li><code>await_suspend</code> 里捕获的 <code>this</code> 指向 awaiter 对象，而 awaiter 作为 <code>co_await</code> 的临时对象<br><strong>活在协程帧里</strong>，所以挂起期间它一直有效——这正是 1.3 里”awaiter 也要进帧”的原因。</li>
+<li><code>h</code> 是当前协程的 handle（<code>coroutine_handle&lt;&gt;</code> 是类型擦除版），把它交给”完成时能通知我的人”，<br>是异步转协程的<strong>唯一接口</strong>。</li>
+<li>生产代码不要用 <code>detach</code> 线程：线程创建成本高，且无法控制并发度。正确做法是把 <code>h</code> 塞进<br>IO 多路复用的完成队列。</li>
+</ul>
+<hr>
+<h2 id="五、promise-type：协程的控制中枢"><a href="#五、promise-type：协程的控制中枢" class="headerlink" title="五、promise_type：协程的控制中枢"></a>五、<code>promise_type</code>：协程的控制中枢</h2><h3 id="5-1-promise-type-必须提供的接口"><a href="#5-1-promise-type-必须提供的接口" class="headerlink" title="5.1 promise_type 必须提供的接口"></a>5.1 <code>promise_type</code> 必须提供的接口</h3><p>协程函数的<strong>返回类型</strong>里必须能找到 <code>promise_type</code> 这个成员类型<br>（或者你特化了 <code>std::coroutine_traits&lt;...&gt;</code>）。编译器通过它来驱动整个协程：</p>
+<table>
+<thead>
+<tr>
+<th>接口</th>
+<th>是否必须</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>promise_type</code></td>
+<td>必须</td>
+<td>帧内 promise 对象的类型</td>
+</tr>
+<tr>
+<td><code>get_return_object()</code></td>
+<td>必须</td>
+<td>构造返回给调用者的对象（通常持有 handle）</td>
+</tr>
+<tr>
+<td><code>initial_suspend()</code></td>
+<td>必须</td>
+<td>初始挂起点，返回 awaiter，决定 lazy&#x2F;eager</td>
+</tr>
+<tr>
+<td><code>final_suspend()</code></td>
+<td>必须</td>
+<td>终结挂起点，返回 awaiter，决定帧何时销毁</td>
+</tr>
+<tr>
+<td><code>return_void()</code> &#x2F; <code>return_value(v)</code></td>
+<td>二选一</td>
+<td><code>co_return</code> 的行为，<strong>不能同时存在</strong></td>
+</tr>
+<tr>
+<td><code>unhandled_exception()</code></td>
+<td>必须</td>
+<td>协程内未捕获异常的处理方式</td>
+</tr>
+<tr>
+<td><code>yield_value(v)</code></td>
+<td><code>co_yield</code> 时必须</td>
+<td>产出一个值，返回 awaiter</td>
+</tr>
+<tr>
+<td><code>await_transform(e)</code></td>
+<td>可选</td>
+<td>改写 <code>co_await</code> 的操作数（例如强制协程上下文）</td>
+</tr>
+<tr>
+<td><code>operator new / delete</code></td>
+<td>可选</td>
+<td>自定义协程帧的分配策略</td>
+</tr>
+</tbody></table>
+<p>这也是 C++20 协程”只有语言机制、没有标准库”的体现：<strong>上面这些全部要你自己写</strong>。</p>
+<h3 id="5-2-给协程一个返回类型：Task"><a href="#5-2-给协程一个返回类型：Task" class="headerlink" title="5.2 给协程一个返回类型：Task&lt;T&gt;"></a>5.2 给协程一个返回类型：<code>Task&lt;T&gt;</code></h3><p><code>void</code> 是没有 <code>promise_type</code> 的，所以 <code>void</code> 函数<strong>不能是协程</strong>——这也是很多人第一个编译错误。<br>我们需要一个专门的返回类型，习惯上叫 <code>Task</code>（或 <code>task</code>、<code>lazy</code>）：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;coroutine&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;exception&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;utility&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Task</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">promise_type</span></span><br><span class="line">    &#123;</span><br><span class="line">        T value_&#123;&#125;;                          <span class="comment">// co_return 的值存这里</span></span><br><span class="line">        std::exception_ptr error_&#123;&#125;;         <span class="comment">// 异常也存这里</span></span><br><span class="line">        std::coroutine_handle&lt;&gt; continuation_&#123;&#125;; <span class="comment">// 谁在等我（见 5.4）</span></span><br><span class="line"></span><br><span class="line">        <span class="function">Task <span class="title">get_return_object</span><span class="params">()</span></span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> Task&#123;std::coroutine_handle&lt;promise_type&gt;::<span class="built_in">from_promise</span>(*<span class="keyword">this</span>)&#125;;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 惰性启动：创建 Task 时协程一行都不执行</span></span><br><span class="line">        <span class="function">std::suspend_always <span class="title">initial_suspend</span><span class="params">()</span> <span class="keyword">noexcept</span> </span>&#123; <span class="keyword">return</span> &#123;&#125;; &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 结束时挂住，让 Task 有机会读取结果并销毁帧</span></span><br><span class="line">        <span class="function">std::suspend_always <span class="title">final_suspend</span><span class="params">()</span> <span class="keyword">noexcept</span> </span>&#123; <span class="keyword">return</span> &#123;&#125;; &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="type">void</span> <span class="title">return_value</span><span class="params">(T value)</span> </span>&#123; value_ = std::<span class="built_in">move</span>(value); &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="type">void</span> <span class="title">unhandled_exception</span><span class="params">()</span> <span class="keyword">noexcept</span> </span>&#123; error_ = std::<span class="built_in">current_exception</span>(); &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">explicit</span> <span class="title">Task</span><span class="params">(std::coroutine_handle&lt;promise_type&gt; handle)</span> <span class="keyword">noexcept</span></span></span><br><span class="line"><span class="function">        : handle_(handle) &#123;</span>&#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">Task</span>(Task&amp;&amp; other) <span class="keyword">noexcept</span></span><br><span class="line">        : <span class="built_in">handle_</span>(std::<span class="built_in">exchange</span>(other.handle_, std::coroutine_handle&lt;promise_type&gt;&#123;&#125;)) &#123;&#125;</span><br><span class="line"></span><br><span class="line">    Task&amp; <span class="keyword">operator</span>=(Task&amp;&amp; other) <span class="keyword">noexcept</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span> != &amp;other)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (handle_) handle_.<span class="built_in">destroy</span>();</span><br><span class="line">            handle_ = std::<span class="built_in">exchange</span>(other.handle_, std::coroutine_handle&lt;promise_type&gt;&#123;&#125;);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">Task</span>(<span class="type">const</span> Task&amp;) = <span class="keyword">delete</span>;</span><br><span class="line">    Task&amp; <span class="keyword">operator</span>=(<span class="type">const</span> Task&amp;) = <span class="keyword">delete</span>;</span><br><span class="line"></span><br><span class="line">    ~<span class="built_in">Task</span>()</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (handle_) handle_.<span class="built_in">destroy</span>();      <span class="comment">// RAII：谁持有谁负责销毁帧</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">resume</span><span class="params">()</span> <span class="type">const</span> </span>&#123; handle_.<span class="built_in">resume</span>(); &#125;</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">done</span><span class="params">()</span> <span class="type">const</span> </span>&#123; <span class="keyword">return</span> handle_.done(); &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">T <span class="title">result</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (handle_.<span class="built_in">promise</span>().error_)</span><br><span class="line">            std::<span class="built_in">rethrow_exception</span>(handle_.<span class="built_in">promise</span>().error_);  <span class="comment">// 异常穿透到等待者</span></span><br><span class="line">        <span class="keyword">return</span> std::<span class="built_in">move</span>(handle_.<span class="built_in">promise</span>().value_);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    std::coroutine_handle&lt;promise_type&gt; handle_&#123;&#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>几个设计要点：</p>
+<ul>
+<li><strong><code>Task</code> 必须是 move-only</strong>：它持有一个协程帧的所有权，拷贝会导致重复 <code>destroy()</code>。</li>
+<li><strong><code>initial_suspend</code> 返回 <code>suspend_always</code></strong> 是最常见的做法（惰性）：<br>返回 <code>Task</code> 时协程还没跑，你可以在真正执行前把它塞进调度队列、组合、取消，<br>也能避免”构造过程中协程立刻重入”带来的时序问题。<br>如果想”创建即执行”，用 <code>suspend_never</code>。</li>
+<li><strong><code>result()</code> 里检查 <code>error_</code></strong>：这样协程内的异常会沿着 <code>co_await</code> 链向上传播，<br>写法与同步代码的 <code>try/catch</code> 完全一致。</li>
+</ul>
+<h3 id="5-3-final-suspend-与生命周期陷阱"><a href="#5-3-final-suspend-与生命周期陷阱" class="headerlink" title="5.3 final_suspend 与生命周期陷阱"></a>5.3 <code>final_suspend</code> 与生命周期陷阱</h3><p><code>final_suspend</code> 的返回值决定了帧在协程结束后的命运：</p>
+<table>
+<thead>
+<tr>
+<th><code>final_suspend</code> 返回</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>suspend_always</code></td>
+<td>协程停在终结挂起点，<code>handle.done() == true</code>，<strong>帧仍然有效</strong>，必须手动 <code>destroy()</code></td>
+</tr>
+<tr>
+<td><code>suspend_never</code></td>
+<td>协程结束时帧<strong>立即被销毁</strong>，<code>handle</code> 立刻变成悬空指针</td>
+</tr>
+</tbody></table>
+<p>因此下面这样写是危险的：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">std::suspend_never <span class="title">final_suspend</span><span class="params">()</span> <span class="keyword">noexcept</span> </span>&#123; <span class="keyword">return</span> &#123;&#125;; &#125;  <span class="comment">// 千万别这么写</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 调用方：</span></span><br><span class="line"><span class="keyword">auto</span> t = <span class="built_in">SomeCoroutine</span>();   <span class="comment">// 跑完就自动销毁了</span></span><br><span class="line">t.<span class="built_in">result</span>();                 <span class="comment">// 悬空 handle → 未定义行为</span></span><br></pre></td></tr></table></figure>
+
+<p>几乎所有手写 <code>Task</code> 都用 <code>suspend_always</code>，把”销毁”交给 <code>Task</code> 的析构函数（RAII）。<br>代价是<strong>必须保证 <code>Task</code> 一定被销毁</strong>，否则就是内存泄漏——包括在 <code>co_await</code> 表达式里产生临时<br><code>Task</code> 的场景。</p>
+<p>相似的问题还有两类：</p>
+<ul>
+<li><strong>协程帧被销毁后仍有线程持有 handle</strong>：<code>await_suspend</code> 里 <code>detach</code> 出去的线程在协程被<br><code>destroy()</code> 之后才 <code>resume()</code>，是典型的 use-after-free。</li>
+<li><strong>引用形参</strong>：形参按值拷贝进帧，但如果形参是引用&#x2F;指针，被引用对象的生命周期仍需由你保证。</li>
+</ul>
+<h3 id="5-4-协程套协程：co-await-一个-Task"><a href="#5-4-协程套协程：co-await-一个-Task" class="headerlink" title="5.4 协程套协程：co_await 一个 Task"></a>5.4 协程套协程：<code>co_await</code> 一个 <code>Task</code></h3><p>真实代码里协程会互相调用。让 <code>Task</code> 可以被 <code>co_await</code>，需要两件事：</p>
+<p><strong>① 给 <code>Task</code> 加 <code>operator co_await()</code>，返回一个 awaiter：</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">Awaiter</span></span><br><span class="line">&#123;</span><br><span class="line">    std::coroutine_handle&lt;promise_type&gt; child_;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">await_ready</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">noexcept</span> </span>&#123; <span class="keyword">return</span> <span class="literal">false</span>; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 返回 handle → 对称转移：不回到父协程，直接开跑子协程</span></span><br><span class="line">    std::coroutine_handle&lt;&gt; <span class="built_in">await_suspend</span>(std::coroutine_handle&lt;&gt; parent) <span class="keyword">noexcept</span></span><br><span class="line">    &#123;</span><br><span class="line">        child_.<span class="built_in">promise</span>().continuation_ = parent;   <span class="comment">// 子协程结束后叫醒父协程</span></span><br><span class="line">        <span class="keyword">return</span> child_;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">T <span class="title">await_resume</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">auto</span>&amp; p = child_.<span class="built_in">promise</span>();</span><br><span class="line">        <span class="keyword">if</span> (p.error_) std::<span class="built_in">rethrow_exception</span>(p.error_);</span><br><span class="line">        <span class="keyword">return</span> std::<span class="built_in">move</span>(p.value_);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function">Awaiter <span class="keyword">operator</span> <span class="title">co_await</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">noexcept</span> </span>&#123; <span class="keyword">return</span> Awaiter&#123;handle_&#125;; &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>② 让 <code>final_suspend</code> 返回一个”唤醒 continuation”的 awaiter：</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">FinalAwaiter</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">await_ready</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">noexcept</span> </span>&#123; <span class="keyword">return</span> <span class="literal">false</span>; &#125;</span><br><span class="line"></span><br><span class="line">    std::coroutine_handle&lt;&gt; <span class="built_in">await_suspend</span>(std::coroutine_handle&lt;promise_type&gt; h) <span class="keyword">noexcept</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">auto</span> next = h.<span class="built_in">promise</span>().continuation_)</span><br><span class="line">            <span class="keyword">return</span> next;                  <span class="comment">// 尾调用回父协程，栈不增长</span></span><br><span class="line">        <span class="keyword">return</span> std::<span class="built_in">noop_coroutine</span>();     <span class="comment">// 没人等，交给调度器</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">await_resume</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">noexcept</span> </span>&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// promise_type 里把 suspend_always 换掉</span></span><br><span class="line"><span class="function">FinalAwaiter <span class="title">final_suspend</span><span class="params">()</span> <span class="keyword">noexcept</span> </span>&#123; <span class="keyword">return</span> &#123;&#125;; &#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>suspend_always</code> 换成 <code>FinalAwaiter</code> 之后，协程结束时<strong>不会</strong>回到 <code>resume()</code> 的调用点，<br>而是直接跳到等待它的父协程——这就是对称转移的实际用法，也是实现零开销协程链的关键。</p>
+<hr>
+<h2 id="六、co-return：让协程返回值"><a href="#六、co-return：让协程返回值" class="headerlink" title="六、co_return：让协程返回值"></a>六、<code>co_return</code>：让协程返回值</h2><h3 id="6-1-return-value-与-return-void"><a href="#6-1-return-value-与-return-void" class="headerlink" title="6.1 return_value 与 return_void"></a>6.1 <code>return_value</code> 与 <code>return_void</code></h3><ul>
+<li><code>co_return expr;</code> → <code>promise.return_value(expr)</code>，<code>expr</code> 会转换成 <code>return_value</code> 的形参类型；</li>
+<li><code>co_return;</code> → <code>promise.return_void()</code>；</li>
+<li>函数体走到末尾自然结束（没有任何 <code>co_return</code>）→ 等价于 <code>co_return;</code>，同样要求 <code>return_void()</code>；</li>
+<li><code>return_void</code> 与 <code>return_value</code> <strong>不能同时定义</strong>；</li>
+<li>协程里<strong>不能出现普通的 <code>return</code> 语句</strong>（<code>return;</code> 也不行）。</li>
+</ul>
+<p>所以 <code>Task&lt;T&gt;</code> 用 <code>return_value</code>，而 <code>Task&lt;void&gt;</code> 只需要换个函数即可，其余结构完全一样：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Task</span>&lt;<span class="type">void</span>&gt;</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">promise_type</span></span><br><span class="line">    &#123;</span><br><span class="line">        std::exception_ptr error_&#123;&#125;;</span><br><span class="line"></span><br><span class="line">        <span class="function">Task <span class="title">get_return_object</span><span class="params">()</span></span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> Task&#123;std::coroutine_handle&lt;promise_type&gt;::<span class="built_in">from_promise</span>(*<span class="keyword">this</span>)&#125;;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function">std::suspend_always <span class="title">initial_suspend</span><span class="params">()</span> <span class="keyword">noexcept</span> </span>&#123; <span class="keyword">return</span> &#123;&#125;; &#125;</span><br><span class="line">        <span class="function">std::suspend_always <span class="title">final_suspend</span><span class="params">()</span> <span class="keyword">noexcept</span> </span>&#123; <span class="keyword">return</span> &#123;&#125;; &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="type">void</span> <span class="title">return_void</span><span class="params">()</span> <span class="keyword">noexcept</span> </span>&#123;&#125;                                   <span class="comment">// 只是这里不同</span></span><br><span class="line">        <span class="function"><span class="type">void</span> <span class="title">unhandled_exception</span><span class="params">()</span> <span class="keyword">noexcept</span> </span>&#123; error_ = std::<span class="built_in">current_exception</span>(); &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 其余成员（handle 管理、resume/done 等）与 Task&lt;T&gt; 一致，result() 改为检查异常即可</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-2-异常处理"><a href="#6-2-异常处理" class="headerlink" title="6.2 异常处理"></a>6.2 异常处理</h3><p>因为协程体被包在 <code>try</code> 块里，任何逃逸出函数体的异常都会进入 <code>unhandled_exception()</code>。<br>通常有两种策略：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 策略一：存起来，等 await_resume / result() 时重新抛出（推荐，异常可传播）</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">unhandled_exception</span><span class="params">()</span> <span class="keyword">noexcept</span> </span>&#123; error_ = std::<span class="built_in">current_exception</span>(); &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 策略二：直接终止（适合&quot;写错就该崩&quot;的场景，零开销）</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">unhandled_exception</span><span class="params">()</span> <span class="keyword">noexcept</span> </span>&#123; std::<span class="built_in">terminate</span>(); &#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意：<code>unhandled_exception()</code> 本身<strong>不是协程</strong>，里面不能 <code>co_await</code>；<br>处理完异常后执行流会继续走到 <code>final_suspend()</code>。</p>
+<h3 id="6-3-完整示例：用协程重写异步求和"><a href="#6-3-完整示例：用协程重写异步求和" class="headerlink" title="6.3 完整示例：用协程重写异步求和"></a>6.3 完整示例：用协程重写异步求和</h3><p>把 §4.4 的 <code>AsyncRead</code>、§5.2 的 <code>Task&lt;T&gt;</code> 和下面这段拼在一起，就是一个完整可编译的程序：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;chrono&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;coroutine&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;exception&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;thread&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;utility&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 1. Task&lt;T&gt;   —— 见 5.2</span></span><br><span class="line"><span class="comment">// 2. AsyncRead —— 见 4.4</span></span><br><span class="line"></span><br><span class="line"><span class="function">Task&lt;<span class="type">int</span>&gt; <span class="title">SumThree</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> total = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    total += <span class="keyword">co_await</span> AsyncRead&#123;&#125;;</span><br><span class="line">    total += <span class="keyword">co_await</span> AsyncRead&#123;&#125;;</span><br><span class="line">    total += <span class="keyword">co_await</span> AsyncRead&#123;&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">co_return</span> total;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Task&lt;<span class="type">int</span>&gt; task = <span class="built_in">SumThree</span>();   <span class="comment">// 惰性：此时协程体一行都没执行</span></span><br><span class="line">    task.<span class="built_in">resume</span>();                 <span class="comment">// 手动驱动；真实项目里交给事件循环</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 示例用轮询等待结果，真实场景应由调度器驱动</span></span><br><span class="line">    <span class="keyword">while</span> (!task.done())</span><br><span class="line">        std::this_thread::<span class="built_in">sleep_for</span>(std::chrono::<span class="built_in">milliseconds</span>(<span class="number">10</span>));</span><br><span class="line"></span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;sum: &quot;</span> &lt;&lt; task.<span class="built_in">result</span>() &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译与运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">g++ -std=c++20 -O2 -pthread coro.cpp -o coro &amp;&amp; ./coro</span><br><span class="line"><span class="comment"># sum: 30</span></span><br></pre></td></tr></table></figure>
+
+<p>三个 <code>co_await</code> 各耗时 1 秒，<strong>总耗时约 3 秒</strong>——因为它们被串行等待。<br>如果你想让它们并行，需要把三个 <code>Task</code> 都启动起来再统一等待（这超出了本文范围，<br>但在 <code>cppcoro::when_all</code> 或 <code>std::execution</code> 的 sender&#x2F;receiver 模型里就是标准能力）。</p>
+<p>同一段逻辑用回调写，就是 §2.1 那段三层嵌套；用协程写，读起来和同步代码一模一样——<br>这就是”<strong>同步的写法，异步的执行</strong>“。</p>
+<hr>
+<h2 id="七、co-yield：生成器"><a href="#七、co-yield：生成器" class="headerlink" title="七、co_yield：生成器"></a>七、<code>co_yield</code>：生成器</h2><h3 id="7-1-co-yield-的本质"><a href="#7-1-co-yield-的本质" class="headerlink" title="7.1 co_yield 的本质"></a>7.1 <code>co_yield</code> 的本质</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">co_yield</span> expr;      <span class="comment">// ≡ co_await promise.yield_value(expr);</span></span><br></pre></td></tr></table></figure>
+
+<p><code>yield_value(expr)</code> 把值存进 promise，并返回一个 awaiter；只要这个 awaiter 是 <code>suspend_always</code>，<br>协程就会在这里挂起，等下一次 <code>resume()</code> 时从 <code>co_yield</code> 之后继续。</p>
+<p>它把一个函数变成了”<strong>可以多次返回、按需产出</strong>“的序列生成器，<br>最典型的收益是：<strong>生产逻辑可以写成顺序代码，而消费方按需取值</strong>。</p>
+<h3 id="7-2-实现一个-Generator"><a href="#7-2-实现一个-Generator" class="headerlink" title="7.2 实现一个 Generator"></a>7.2 实现一个 <code>Generator</code></h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Generator</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">promise_type</span></span><br><span class="line">    &#123;</span><br><span class="line">        T current_&#123;&#125;;</span><br><span class="line"></span><br><span class="line">        <span class="function">Generator <span class="title">get_return_object</span><span class="params">()</span></span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> Generator&#123;std::coroutine_handle&lt;promise_type&gt;::<span class="built_in">from_promise</span>(*<span class="keyword">this</span>)&#125;;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function">std::suspend_always <span class="title">initial_suspend</span><span class="params">()</span> <span class="keyword">noexcept</span> </span>&#123; <span class="keyword">return</span> &#123;&#125;; &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function">std::suspend_always <span class="title">yield_value</span><span class="params">(T value)</span></span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">            current_ = std::<span class="built_in">move</span>(value);      <span class="comment">// 把值交给外界</span></span><br><span class="line">            <span class="keyword">return</span> &#123;&#125;;                        <span class="comment">// 然后挂起</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function">std::suspend_always <span class="title">final_suspend</span><span class="params">()</span> <span class="keyword">noexcept</span> </span>&#123; <span class="keyword">return</span> &#123;&#125;; &#125;</span><br><span class="line">        <span class="function"><span class="type">void</span> <span class="title">return_void</span><span class="params">()</span> <span class="keyword">noexcept</span> </span>&#123;&#125;</span><br><span class="line">        <span class="function"><span class="type">void</span> <span class="title">unhandled_exception</span><span class="params">()</span> </span>&#123; <span class="keyword">throw</span>; &#125; <span class="comment">// 简单起见，直接向调用者抛</span></span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">explicit</span> <span class="title">Generator</span><span class="params">(std::coroutine_handle&lt;promise_type&gt; handle)</span> <span class="keyword">noexcept</span></span></span><br><span class="line"><span class="function">        : handle_(handle) &#123;</span>&#125;</span><br><span class="line">    <span class="built_in">Generator</span>(Generator&amp;&amp; other) <span class="keyword">noexcept</span></span><br><span class="line">        : <span class="built_in">handle_</span>(std::<span class="built_in">exchange</span>(other.handle_, std::coroutine_handle&lt;promise_type&gt;&#123;&#125;)) &#123;&#125;</span><br><span class="line">    <span class="built_in">Generator</span>(<span class="type">const</span> Generator&amp;) = <span class="keyword">delete</span>;</span><br><span class="line">    Generator&amp; <span class="keyword">operator</span>=(<span class="type">const</span> Generator&amp;) = <span class="keyword">delete</span>;</span><br><span class="line">    ~<span class="built_in">Generator</span>() &#123; <span class="keyword">if</span> (handle_) handle_.<span class="built_in">destroy</span>(); &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 推进到下一个值；没有了返回 false</span></span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">next</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!handle_ || handle_.done()) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        handle_.<span class="built_in">resume</span>();</span><br><span class="line">        <span class="keyword">return</span> !handle_.done();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">const</span> T&amp; <span class="title">value</span><span class="params">()</span> <span class="type">const</span> </span>&#123; <span class="keyword">return</span> handle_.<span class="built_in">promise</span>().current_; &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    std::coroutine_handle&lt;promise_type&gt; handle_&#123;&#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>使用时：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Generator&lt;<span class="type">int</span>&gt; <span class="title">Iota</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> step)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> value = start;</span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>)          <span class="comment">// 无限序列也没问题，因为它是惰性的</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">co_yield</span> value;</span><br><span class="line">        value += step;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> gen = <span class="built_in">Iota</span>(<span class="number">0</span>, <span class="number">5</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span> &amp;&amp; gen.<span class="built_in">next</span>(); ++i)</span><br><span class="line">        std::cout &lt;&lt; gen.<span class="built_in">value</span>() &lt;&lt; <span class="string">&#x27; &#x27;</span>;</span><br><span class="line">    std::cout &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 5 10 15 20</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-3-为什么”惰性”很重要"><a href="#7-3-为什么”惰性”很重要" class="headerlink" title="7.3 为什么”惰性”很重要"></a>7.3 为什么”惰性”很重要</h3><ul>
+<li><strong>内存 O(1)</strong>：<code>Iota</code> 生成一亿个数也不需要一亿个元素的内存，用完即走；</li>
+<li><strong>可组合</strong>：<code>take</code>、<code>filter</code>、<code>map</code> 这类操作可以一层层套在生成器上，每一次 <code>next()</code><br>才真正推进一格；</li>
+<li><strong>适合流式场景</strong>：读日志、解析大文件、遍历语法树、分页拉取远端数据。</li>
+</ul>
+<p>C++23 已经把这件事标准化了——<code>std::generator&lt;T&gt;</code> 可以直接写：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;generator&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function">std::generator&lt;<span class="type">int</span>&gt; <span class="title">Iota</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> step)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> value = start;</span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">co_yield</span> value;</span><br><span class="line">        value += step;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 还支持 range-for：for (int v : Iota(0, 5)) &#123; ... &#125;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="八、性能、陷阱与工程实践"><a href="#八、性能、陷阱与工程实践" class="headerlink" title="八、性能、陷阱与工程实践"></a>八、性能、陷阱与工程实践</h2><h3 id="8-1-一次协程的开销"><a href="#8-1-一次协程的开销" class="headerlink" title="8.1 一次协程的开销"></a>8.1 一次协程的开销</h3><ul>
+<li><strong>创建&#x2F;销毁</strong>：一次帧分配 + promise 构造 + 局部变量初始化；</li>
+<li><strong>挂起&#x2F;恢复</strong>：保存少量寄存器、写挂起点索引、跳转，<strong>不进内核</strong>。</li>
+</ul>
+<p>量级上，协程切换通常在几十纳秒，而线程切换在微秒级，线程创建在数十微秒以上；<br>单机承载数万到数十万协程是常见场景。但这些都是实现相关的经验值，<strong>以你的实测为准</strong>。</p>
+<h3 id="8-2-堆分配与-HALO-优化"><a href="#8-2-堆分配与-HALO-优化" class="headerlink" title="8.2 堆分配与 HALO 优化"></a>8.2 堆分配与 HALO 优化</h3><p>帧大小编译期已知，所以标准允许编译器做 <strong>HALO（Heap Allocation eLision Optimization，<br>也叫 coroutine elision）</strong>：当编译器能证明帧的生存期完全被调用者包住时，可以把帧放在调用者的栈上，<br>从而完全消除堆分配。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">co_await AsyncRead&#123;&#125;;   // 帧随用随建随销，编译器有机会把它放在栈上</span><br></pre></td></tr></table></figure>
+
+<p>实践中 GCC&#x2F;Clang&#x2F;MSVC 在 <code>-O2</code> 下都能消除一部分，但对跨函数、跨调度器、被 <code>Task</code> 带出作用域的协程<br>通常无能为力。如果需要确定性，可以：</p>
+<ul>
+<li>在 <code>promise_type</code> 里重载 <code>operator new/delete</code> 走内存池；</li>
+<li>复用帧（<code>placement new</code> + 池化），但要注意 <code>destroy</code> 与复用之间的生命周期。</li>
+</ul>
+<h3 id="8-3-常见陷阱清单"><a href="#8-3-常见陷阱清单" class="headerlink" title="8.3 常见陷阱清单"></a>8.3 常见陷阱清单</h3><ol>
+<li><strong><code>void</code> 返回类型做协程</strong>：编译错误，<code>void</code> 没有 <code>promise_type</code>。</li>
+<li><strong><code>final_suspend</code> 用 <code>suspend_never</code></strong>：帧被自动销毁，<code>handle</code> 变野指针。</li>
+<li><strong>忘记 <code>destroy()</code></strong>：<code>suspend_always</code> 的帧不会被自动回收，泄漏。</li>
+<li><strong>多线程同时 <code>resume()</code> 同一个协程</strong>：数据竞争，UB。</li>
+<li><strong>协程销毁后仍有线程持有 handle</strong>：<code>detach</code> 线程、定时器、IO completion 都是常见来源。</li>
+<li><strong>引用&#x2F;指针形参</strong>：帧里只存了引用本身，被引用对象的生命周期要自己保证。</li>
+<li><strong>lambda 协程捕获 <code>this</code></strong>：对象先于协程销毁，恢复时就是 use-after-free。</li>
+<li><strong>awaiter 里保存的裸引用</strong>：awaiter 本身活在帧里没问题，但它引用的对象不一定活得久。</li>
+<li><strong>忘记检查 <code>unhandled_exception</code></strong>：异常被静默吞掉，比崩溃更难查。</li>
+</ol>
+<h3 id="8-4-协程函数的限制"><a href="#8-4-协程函数的限制" class="headerlink" title="8.4 协程函数的限制"></a>8.4 协程函数的限制</h3><ul>
+<li>不能是 <code>constexpr</code> &#x2F; <code>consteval</code> 函数；</li>
+<li>不能是 <code>main</code>；</li>
+<li>不能有可变参数（<code>...</code>）；</li>
+<li>返回类型不能用 <code>auto</code> &#x2F; <code>decltype(auto)</code> 推导（必须能静态确定 <code>promise_type</code>）；</li>
+<li>构造函数、析构函数不能是协程；</li>
+<li>不能包含普通 <code>return</code> 语句；</li>
+<li>lambda 可以是协程（C++20 起），此时 <code>promise_type</code> 由 lambda 的闭包类型（或 <code>coroutine_traits</code>）提供。</li>
+</ul>
+<h3 id="8-5-生态与选型"><a href="#8-5-生态与选型" class="headerlink" title="8.5 生态与选型"></a>8.5 生态与选型</h3><p>C++20 只给了机制，落地通常借助库：</p>
+<table>
+<thead>
+<tr>
+<th>库</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>cppcoro</code></td>
+<td>教学&#x2F;原型友好：<code>task</code>、<code>generator</code>、<code>async_mutex</code>、<code>when_all</code></td>
+</tr>
+<tr>
+<td>Boost.Asio（<code>co_await</code> &#x2F; <code>awaitable&lt;T&gt;</code>）</td>
+<td>网络 IO 的事实标准，<code>co_await socket.async_read_some(...)</code></td>
+</tr>
+<tr>
+<td><code>folly::coro</code></td>
+<td>Facebook 生产级实现，配套 executor</td>
+</tr>
+<tr>
+<td><code>libunifex</code> &#x2F; <code>std::execution</code>（P2300）</td>
+<td>sender&#x2F;receiver 模型，未来的标准异步框架</td>
+</tr>
+<tr>
+<td><code>std::generator</code>（C++23）</td>
+<td>标准生成器，替代手写 <code>Generator</code></td>
+</tr>
+</tbody></table>
+<p>建议：<strong>自己实现 <code>Task</code>&#x2F;<code>Generator</code> 用来理解原理，真正写业务时用成熟库</strong>——<br>手写实现里那些”忘记 destroy””忘了对称转移导致爆栈””异常传播没接上”的坑，库都已经踩过了。</p>
+<hr>
+<h2 id="九、小结"><a href="#九、小结" class="headerlink" title="九、小结"></a>九、小结</h2><ul>
+<li>协程是<strong>可以暂停&#x2F;恢复的函数</strong>，状态保存在编译器生成的<strong>协程帧</strong>里，与线程解耦；</li>
+<li>C++20 的协程是<strong>无栈</strong>的，只能在 <code>co_await</code> 点挂起，<code>co_await</code> 具有”传染性”；</li>
+<li>它真正解决的是<strong>异步流程的表达问题</strong>：把回调地狱和手写状态机还原成线性代码，<br>附带更好的局部性、更低的内存占用；</li>
+<li>三个关键字背后是两套约定：<strong>Awaitable（<code>await_ready</code>&#x2F;<code>await_suspend</code>&#x2F;<code>await_resume</code>）<br>和 <code>promise_type</code>（<code>get_return_object</code>&#x2F;<code>initial_suspend</code>&#x2F;<code>final_suspend</code>&#x2F;<code>return_*</code>&#x2F;<code>unhandled_exception</code>）</strong>；</li>
+<li>协程<strong>不是线程的替代品</strong>，它需要调度器驱动；多核并行的部分仍然交给线程；</li>
+<li>记住两条安全线：<strong><code>final_suspend</code> 用 <code>suspend_always</code> + RAII 管理帧</strong>，<strong>任何跨挂起的 async 回调都必须<br>与帧的生命周期绑定</strong>。</li>
+</ul>
+<p>协程本身不复杂，复杂的是”谁拥有帧、谁负责恢复、异常怎么传”这三个问题的答案——<br>一旦这三点想清楚了，C++20 协程就只是”把函数拆成可以多次进出的片段”而已。</p>
+
+  </div>
+
+  <footer class="article-reactions">
+    <div class="reaction-group">
+      <button type="button" class="reaction reaction--comment" aria-label="跳转到评论区" data-action="scroll-to-comments">
+        
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-message-circle"></use></svg>
+
+      </button>
+      <span class="reaction-label">评论</span>
+      
+    </div>
+    <div class="reaction-group reaction-group--right">
+      
+      <button type="button" class="reaction reaction--share" aria-label="分享" data-action="share">
+        
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-share-2 flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-share-2"></use></svg>
+
+      </button>
+      <span class="reaction-label">分享</span>
+    </div>
+  </footer>
+
+  
+
+
+  <nav class="article-actions">
+    
+      <a class="article-action article-action--prev" href="/2026/10/15/C-%E5%A4%9A%E7%BA%BF%E7%A8%8BIn-Practice/">
+        
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-arrow-left"></use></svg>
+
+        <span class="action-label">上一篇</span>
+        <span class="action-title">C++多线程In Practice</span>
+      </a>
+    
+    
+      <a class="article-action article-action--next" href="/2026/09/26/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3STL%E5%AE%B9%E5%99%A8/">
+        <span class="action-label">下一篇</span>
+        <span class="action-title">深入理解STL容器</span>
+        
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-arrow-right"></use></svg>
+
+      </a>
+    
+  </nav>
+</article>
+</div>
+
+<button type="button" class="back-to-top" data-action="scroll-to-top" aria-label="返回顶部" hidden>
+  
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-arrow-up"></use></svg>
+
+</button>
+
+
+  <section class="related-paper">
+    <header class="related-paper__head">
+      <h2>
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-link"></use></svg>
+相关文章</h2>
+      <a class="related-paper__more" href="/archives/">
+        <span>查看更多</span>
+        
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-arrow-right"></use></svg>
+
+      </a>
+    </header>
+    <div class="related-paper__grid">
+      
+        <a class="related-card" href="/2026/10/15/C-%E5%A4%9A%E7%BA%BF%E7%A8%8BIn-Practice/">
+          <span class="related-card__thumb">
+            
+<div class="paper-thumb paper-thumb-0 paper-thumb--cover">
+  
+    <img class="paper-thumb__img" src="/images/cover/camera.webp" alt="" loading="lazy" referrerpolicy="no-referrer">
+  
+</div>
+
+          </span>
+          <span class="related-card__body">
+            <strong class="related-card__title">C++多线程In Practice</strong>
+            <em class="related-card__date">2026-10-15</em>
+          </span>
+        </a>
+      
+        <a class="related-card" href="/2026/09/26/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3STL%E5%AE%B9%E5%99%A8/">
+          <span class="related-card__thumb">
+            
+<div class="paper-thumb paper-thumb-1 paper-thumb--cover">
+  
+    <img class="paper-thumb__img" src="/images/cover/mountain.webp" alt="" loading="lazy" referrerpolicy="no-referrer">
+  
+</div>
+
+          </span>
+          <span class="related-card__body">
+            <strong class="related-card__title">深入理解STL容器</strong>
+            <em class="related-card__date">2026-09-26</em>
+          </span>
+        </a>
+      
+        <a class="related-card" href="/2026/08/21/%E8%AF%A6%E8%A7%A3CPP%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80/">
+          <span class="related-card__thumb">
+            
+<div class="paper-thumb paper-thumb-2 paper-thumb--cover">
+  
+    <img class="paper-thumb__img" src="/2026/08/21/%E8%AF%A6%E8%A7%A3CPP%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80/1.png" alt="详解CPP内存布局" loading="lazy" referrerpolicy="no-referrer">
+  
+</div>
+
+          </span>
+          <span class="related-card__body">
+            <strong class="related-card__title">详解CPP内存布局</strong>
+            <em class="related-card__date">2026-08-21</em>
+          </span>
+        </a>
+      
+        <a class="related-card" href="/2026/08/12/%E5%85%B3%E4%BA%8Econst-constexpr-consteval%E7%9A%84%E4%B8%80%E4%BA%9B%E5%88%86%E6%9E%90/">
+          <span class="related-card__thumb">
+            
+<div class="paper-thumb paper-thumb-0 paper-thumb--cover">
+  
+    <img class="paper-thumb__img" src="/images/cover/port.webp" alt="" loading="lazy" referrerpolicy="no-referrer">
+  
+</div>
+
+          </span>
+          <span class="related-card__body">
+            <strong class="related-card__title">C++中的 const/constexpr/consteval/constinit 的一些分析</strong>
+            <em class="related-card__date">2026-08-12</em>
+          </span>
+        </a>
+      
+    </div>
+  </section>
+
+
+      
+
+
+    </section>
+    
+  </main>
+
+  <div class="sidebar-backdrop js-sidebar-close" aria-hidden="true"></div>
+
+  
+<footer class="site-footer">
+  <span class="site-footer__left">© 2026 By zhootoo</span>
+  
+    <span class="site-footer__right">
+      
+        <span class="site-footer__row"><span class="site-footer__powered-prefix">Powered by Theme</span> <a href="https://github.com/Homulilly/hexo-theme-flatpaper" target="_blank" rel="noopener">FlatPaper</a></span>
+      
+    </span>
+  
+</footer>
+
+  
+<div class="search-panel" aria-hidden="true" data-index-url="/flatpaper-search.json">
+  <div class="search-backdrop js-search-close"></div>
+  <section class="search-dialog" role="dialog" aria-modal="true" aria-label="搜索文章">
+    <span class="tape tape--top-left" aria-hidden="true"></span>
+    <header class="search-head">
+      <h2><span class="green-dot"></span>搜索文章</h2>
+      <button class="icon-button js-search-close" type="button" aria-label="关闭搜索">
+        
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-x"></use></svg>
+
+      </button>
+    </header>
+    <label class="search-field">
+      
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-search"></use></svg>
+
+      <input id="flatpaper-search" class="search-input" type="search" placeholder="输入关键词，按 Esc 关闭" autocomplete="off">
+    </label>
+    <div class="search-results" data-empty="输入关键词后显示匹配的文章">
+      <p class="search-empty">输入关键词后显示匹配的文章</p>
+    </div>
+  </section>
+</div>
+
+  <script>
+  window.FLATPAPER_I18N = {"language":"zh-CN","common.posts":"文章","common.categories":"分类","common.tags":"标签","common.comments":"评论","common.share":"分享","common.page":"页面","common.archive":"归档","common.post_list":"文章列表","common.search_posts":"搜索文章","common.random_posts":"随机文章","common.reward":"赞赏","common.view_all":"查看全部","pagination.prev":"上一页","pagination.next":"下一页","pagination.post_pager":"文章分页","pagination.archive_pager":"归档分页","index.featured":"精选文章","index.pinned":"置顶","index.read_more":"阅读全文","index.previous_slide":"上一张","index.next_slide":"下一张","index.carousel_pagination":"轮播页码","index.carousel_slide":"第 %d 张","index.latest_posts":"最新文章","index.empty_posts":"还没有文章。创建第一篇文章后，这里会显示最新内容。","archive.title":"归档","archive.post_list":"文章列表","taxonomy.category_count":"%d 篇","taxonomy.empty_categories":"暂时还没有分类。","taxonomy.empty_tags":"暂时还没有标签。","links.label":"友链","links.title":"友情链接","links.empty_data":"暂未加载到友链数据。请确认 source/_data/links.yml 存在并已 hexo clean。","links.rss_label":"%s 的 RSS","friends_feed.label":"朋友圈","friends_feed.title":"友链朋友圈","friends_feed.loading":"正在加载友链动态…","friends_feed.missing_url":"暂未配置 all.json 地址。","friends_feed.load_failed":"友链动态加载失败，请稍后再试。","friends_feed.empty":"暂时没有抓取到友链文章。","friends_feed.load_more":"加载更多","friends_feed.updated_at":"更新于 %s","friends_feed.friend_count":"%d 位友邻","friends_feed.active_count":"%d 位活跃","friends_feed.article_count":"%d 篇文章","friends_feed.unknown_author":"未知站点","friends_feed.date_unknown":"时间未知","guestbook.label":"留言板","guestbook.title":"留言板","guestbook.loading":"正在铺开留言墙…","guestbook.missing_config":"留言墙需要评论系统：请在主题配置中设置 comments: twikoo（并填写 envId）或 comments: artalk（并填写 server）。","guestbook.load_failed":"留言加载失败，请稍后再试。","guestbook.empty":"墙上还空着，来贴第一张留言吧！","guestbook.load_more":"展开更多留言","guestbook.total_count":"共 %d 条留言","guestbook.latest_note":"墙上展示最新 %d 条","guestbook.jump_to_comment":"查看留言","guestbook.sort_time":"查看最新","guestbook.sort_random":"随机排序","guestbook.anonymous":"匿名访客","guestbook.write_hint":"在下方留言，刷新后就会贴到墙上","post.scroll_to_comments":"跳转到评论区","post.previous":"上一篇","post.next":"下一篇","post.no_previous":"没有更早的文章了","post.no_next":"已经是最新的一篇","post.back_to_top":"返回顶部","post.related_posts":"相关文章","post.view_more":"查看更多","not_found.label":"页面走丢了","not_found.title":"找不到这个页面","not_found.text":"这个地址可能已经移动、删除，或者从未存在。","not_found.home":"返回首页","not_found.search":"搜索文章","search.placeholder":"输入关键词，按 Esc 关闭","search.empty":"输入关键词后显示匹配的文章","search.loading":"正在加载搜索索引…","search.load_failed":"搜索索引加载失败，请重新打开搜索重试","search.no_result":"没有找到与 \"%s\" 相关的文章","search.close":"关闭搜索","code.copy":"复制代码","code.collapse":"折叠代码","code.expand":"展开代码","heading.anchor":"链接到此节: %s","head.tag":"标签：%s","head.category":"分类：%s","head.archive":"归档","head.archive_with_date":"归档：%s","head.page_number":"第 %d 页","navigation.primary":"主导航","navigation.mobile":"移动端导航","navigation.brand_home":"FlatPaper 首页","navigation.brand_menu":"打开站点导航","navigation.open_sidebar":"打开侧边栏","navigation.close_sidebar":"关闭侧边栏","navigation.sidebar":"侧边栏","navigation.sidebar_tools":"侧边栏工具","navigation.site_links":"站点链接","navigation.site_info":"站点信息","colors.choose_theme_color":"选择主题色","colors.theme_color":"主题色","colors.toggle_color_mode":"切换颜色模式","colors.green":"绿色","colors.purple":"紫色","colors.pink":"粉色","colors.sakura":"樱花粉","colors.blue":"蓝色","colors.orange":"橙色","colors.black":"黑色","profile.default_bio":"热爱生活，热爱代码，喜欢分享技术与生活中的点滴。","welcome.cta":"开始阅读","welcome.title":"欢迎来到 FlatPaper","welcome.text":"一个专注于内容与阅读体验的博客主题。","home_hero.label":"首页开屏","home_hero.enter":"开始阅读","home_hero.note":"今日","home_hero.default_subtitle":"日常记录","home_hero.nav_links":"开屏导航","home_hero.profile_links":"个人链接","home_hero.tools":"开屏工具","home_hero.shuffle_stickers":"打乱贴纸位置","home_hero.link":"链接","home_hero.sticker_image":"贴纸图片","home_hero.visit_confirm":"要访问 %s 吗？","home_hero.visit":"访问","home_hero.cancel":"取消","toc.title":"文章目录","toc.empty":"目录会根据文章标题自动生成。","toc.expand_all":"展开全部目录","toc.collapse_all":"收起全部目录","sidebar.hot_tags":"热门标签","sidebar.latest_posts":"最新文章"};
+  </script>
+  
+<script src="/js/main.js"></script>
+
+  
+</body>
+</html>
