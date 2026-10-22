@@ -535,7 +535,7 @@
   </a>
   <div class="post-card-copy">
     <h3><a href="/2026/10/15/C-%E5%A4%9A%E7%BA%BF%E7%A8%8BIn-Practice/">C++多线程In Practice</a></h3>
-    <p>理解std::thread我们可以看看C++ 11 std::thread的源码，windows平台： 123456789101112131415class thread&amp;#123; //.....</p>
+    <p>理解std::thread很多人第一次写多线程代码，崩的地方不是业务逻辑，而是 std::thread 的析构。所以这章先不急着讲怎么用，而是看看它的底层机制，把”为什么会崩”搞明白。 我们可...</p>
     
       <div class="meta-line meta-line--tags">
         <span class="meta-tags">
@@ -728,19 +728,19 @@
 
     
       
-<article class="post-card" data-title="CPU缓存行和伪共享">
-  <a class="post-thumb-link" href="/2026/08/15/CPU%E7%BC%93%E5%AD%98%E8%A1%8C%E5%92%8C%E4%BC%AA%E5%85%B1%E4%BA%AB/" aria-label="CPU缓存行和伪共享">
+<article class="post-card" data-title="CPU缓存行和伪共享(false sharing)">
+  <a class="post-thumb-link" href="/2026/08/15/CPU%E7%BC%93%E5%AD%98%E8%A1%8C%E5%92%8C%E4%BC%AA%E5%85%B1%E4%BA%AB/" aria-label="CPU缓存行和伪共享(false sharing)">
     
 <div class="paper-thumb paper-thumb-2 paper-thumb--cover">
   
-    <img class="paper-thumb__img" src="/2026/08/15/CPU%E7%BC%93%E5%AD%98%E8%A1%8C%E5%92%8C%E4%BC%AA%E5%85%B1%E4%BA%AB/false-sharing-mechanism.svg" alt="CPU缓存行和伪共享" loading="lazy" referrerpolicy="no-referrer">
+    <img class="paper-thumb__img" src="/2026/08/15/CPU%E7%BC%93%E5%AD%98%E8%A1%8C%E5%92%8C%E4%BC%AA%E5%85%B1%E4%BA%AB/false-sharing-mechanism.svg" alt="CPU缓存行和伪共享(false sharing)" loading="lazy" referrerpolicy="no-referrer">
   
 </div>
 
   </a>
   <div class="post-card-copy">
-    <h3><a href="/2026/08/15/CPU%E7%BC%93%E5%AD%98%E8%A1%8C%E5%92%8C%E4%BC%AA%E5%85%B1%E4%BA%AB/">CPU缓存行和伪共享</a></h3>
-    <p>1. Cache 与 Cache LineCPU 直接读内存（主存）太慢，所以中间加了几层高速缓存：L1 &amp;#x2F; L2 &amp;#x2F; L3 Cache。CPU 优先从缓存里取数据。 最关...</p>
+    <h3><a href="/2026/08/15/CPU%E7%BC%93%E5%AD%98%E8%A1%8C%E5%92%8C%E4%BC%AA%E5%85%B1%E4%BA%AB/">CPU缓存行和伪共享(false sharing)</a></h3>
+    <p>先看一个真实的性能怪象：多线程程序里，两个线程各自只写自己的变量，没有锁、没有共享数据，理论上应该随核数线性加速。实测却是核数越多越慢，甚至跑不过单线程。代码没有 bug，结果也完全正确。 这...</p>
     
       <div class="meta-line meta-line--tags">
         <span class="meta-tags">
