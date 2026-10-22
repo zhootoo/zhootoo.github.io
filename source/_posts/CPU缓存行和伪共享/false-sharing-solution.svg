@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="520" viewBox="0 0 920 520" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, sans-serif">
+  <title>伪共享解决方案：把热变量拆到不同缓存行</title>
+  <rect width="920" height="520" fill="#ffffff"/>
+
+  <!-- 标题 -->
+  <text x="460" y="40" text-anchor="middle" font-size="22" font-weight="bold" fill="#111827">解决方案：把热变量拆到不同缓存行</text>
+
+  <!-- ========== 左：Bad ========== -->
+  <rect x="30" y="70" width="420" height="400" rx="14" fill="#fef2f2" stroke="#e5534b" stroke-width="2.5"/>
+  <text x="240" y="102" text-anchor="middle" font-size="17" font-weight="bold" fill="#b91c1c">❌ Bad：x、y 挤在同一条缓存行</text>
+
+  <!-- 一条缓存行：x + y 挤一起 -->
+  <rect x="70" y="140" width="120" height="50" fill="#e5534b" stroke="#b91c1c" stroke-width="2"/>
+  <rect x="190" y="140" width="120" height="50" fill="#3b82f6" stroke="#1d4ed8" stroke-width="2"/>
+  <rect x="310" y="140" width="100" height="50" fill="#f3f4f6" stroke="#d1d5db" stroke-width="2"/>
+  <text x="130" y="170" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffffff">x</text>
+  <text x="250" y="170" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffffff">y</text>
+  <text x="360" y="170" text-anchor="middle" font-size="11" fill="#6b7280">剩余</text>
+
+  <text x="240" y="220" text-anchor="middle" font-size="12" fill="#6b7280">一条 64B 缓存行（示意）</text>
+
+  <!-- 问题列表 -->
+  <text x="240" y="262" text-anchor="middle" font-size="14" fill="#b91c1c">Core0 写 x → 整行失效，Core1 重拉</text>
+  <text x="240" y="290" text-anchor="middle" font-size="14" fill="#b91c1c">Core1 写 y → 整行失效，Core0 重拉</text>
+  <text x="240" y="318" text-anchor="middle" font-size="14" fill="#b91c1c">反复来回 → 缓存行“失效风暴”</text>
+
+  <text x="240" y="366" text-anchor="middle" font-size="13" font-weight="bold" fill="#b91c1c">代码：</text>
+  <text x="240" y="392" text-anchor="middle" font-size="12" fill="#374151" font-family="Menlo, Consolas, monospace">struct Stats { uint64_t a, b; };</text>
+  <text x="240" y="414" text-anchor="middle" font-size="12" fill="#374151" font-family="Menlo, Consolas, monospace">// a、b 相邻，几乎必然同缓存行</text>
+  <text x="240" y="446" text-anchor="middle" font-size="12" fill="#374151" font-family="Menlo, Consolas, monospace">// 多核分别写 a、b → 伪共享</text>
+
+  <!-- ========== 右：Good ========== -->
+  <rect x="470" y="70" width="420" height="400" rx="14" fill="#f0fdf4" stroke="#16a34a" stroke-width="2.5"/>
+  <text x="680" y="102" text-anchor="middle" font-size="17" font-weight="bold" fill="#15803d">✅ Good：x、y 各自独占缓存行</text>
+
+  <!-- 缓存行A：x + padding -->
+  <rect x="510" y="140" width="120" height="46" fill="#e5534b" stroke="#b91c1c" stroke-width="2"/>
+  <rect x="630" y="140" width="220" height="46" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="570" y="168" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">x</text>
+  <text x="740" y="168" text-anchor="middle" font-size="11" fill="#6b7280">padding / alignas(64) 隔离</text>
+
+  <!-- 缓存行B：y + padding -->
+  <rect x="510" y="204" width="120" height="46" fill="#3b82f6" stroke="#1d4ed8" stroke-width="2"/>
+  <rect x="630" y="204" width="220" height="46" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="570" y="232" text-anchor="middle" font-size="15" font-weight="bold" fill="#ffffff">y</text>
+  <text x="740" y="232" text-anchor="middle" font-size="11" fill="#6b7280">padding / alignas(64) 隔离</text>
+
+  <text x="680" y="280" text-anchor="middle" font-size="12" fill="#6b7280">x 独占缓存行 A，y 独占缓存行 B（示意）</text>
+
+  <!-- 好处列表 -->
+  <text x="680" y="312" text-anchor="middle" font-size="14" fill="#15803d">Core0 写 x → 只动缓存行 A</text>
+  <text x="680" y="340" text-anchor="middle" font-size="14" fill="#15803d">Core1 写 y → 只动缓存行 B</text>
+  <text x="680" y="368" text-anchor="middle" font-size="14" fill="#15803d">互不影响，零失效风暴</text>
+
+  <text x="680" y="414" text-anchor="middle" font-size="12" fill="#374151" font-family="Menlo, Consolas, monospace">struct Stats {</text>
+  <text x="680" y="434" text-anchor="middle" font-size="12" fill="#374151" font-family="Menlo, Consolas, monospace">  alignas(hardware_destructive_interference_size)</text>
+  <text x="680" y="454" text-anchor="middle" font-size="12" fill="#374151" font-family="Menlo, Consolas, monospace">  uint64_t a, b;</text>
+  <text x="680" y="474" text-anchor="middle" font-size="12" fill="#374151" font-family="Menlo, Consolas, monospace">};</text>
+</svg>
