@@ -125,9 +125,48 @@ BSS 的核心设计理念之一是：**只在内存中预留位置，但不在�
 
 最后我们来看一下，在一个程序内运行时，它们的相对地址顺序又是如何呢？
 
-通过在最新的 64 位操作系统上运行程序，测试一个程序内存布局中每一个分段的 **16 进制起始地址**，发现：从 `.text` 到 `.bss`，地址确实是从小到大依次排列的，即按照地址高低排序：
+```C++
+#include <iostream>
+#include <cstdlib>
+
+// 全局变量
+int g_uninit_var;        // .bss 段
+int g_init_var = 42;     // .data 段
+const int g_const_var = 100; // .rodata只读数据区
+
+void test_function() {
+    int local_var = 10;  // 栈区
+    int* heap_var = new int(20); // 指针本身在栈区，指向的内存 *heap_var 在堆区
+
+    std::cout << "--- 内存区域地址分布 (由高到低) ---" << std::endl;
+    std::cout << "[栈 Stack]      local_var 地址: " << &local_var << std::endl;
+    std::cout << "[堆 Heap]       heap_var  地址: " << heap_var << std::endl;
+    std::cout << "[.bss 段]        g_uninit_var 地址: " << &g_uninit_var << std::endl;
+    std::cout << "[.data 段]       g_init_var   地址: " << &g_init_var << std::endl;
+    std::cout << "[.rodata 段]    g_const_var  地址: " << &g_const_var << std::endl;
+    std::cout << "[.text 段]   test_function地址: " << (void*)test_function << std::endl;
+
+    delete heap_var;
+}
+
+int main() {
+    test_function();
+    return 0;
+}
+```
+
+通过在最新的 64 位操作系统上运行程序，测试一个程序内存布局中每一个分段的 **16 进制起始地址**，发现：从 `.text` 到 `.bss`，地址确实是从小到大依次排列的，即按照地址高低排序，打印如下：
 
 ```text
+the result is 
+--- 内存区域地址分布 (由高到低) ---
+[栈 Stack]      local_var 地址: 0x7ffc7ff69b5c
+[堆 Heap]       heap_var  地址: 0x5f42b0dcd2b0
+[.bss 段]        g_uninit_var 地址: 0x5f42736d3154
+[.data 段]       g_init_var   地址: 0x5f42736d3010
+[.rodata 段]    g_const_var  地址: 0x5f42736d1008
+[.text 段]   test_function地址: 0x5f42736d01e9
+
 代码段 < 只读数据段 < 数据段 < .bss 段
 ```
 
