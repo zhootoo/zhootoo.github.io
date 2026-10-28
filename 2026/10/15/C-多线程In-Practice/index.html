@@ -15,7 +15,7 @@
 <meta property="og:description" content="理解std::thread很多人第一次写多线程代码，崩的地方不是业务逻辑，而是 std::thread 的析构。所以这章先不急着讲怎么用，而是看看它的底层机制，把”为什么会崩”搞明白。 我们可以看看C++ 11 std::thread的源码，windows平台： 123456789101112131415class thread&#123; &#x2F;&#x2F;.... t...">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-10-15T04:30:29.000Z">
-<meta property="article:modified_time" content="2026-10-22T07:07:07.866Z">
+<meta property="article:modified_time" content="2026-10-26T06:56:13.228Z">
 <meta property="article:author" content="zhootoo">
 <meta property="article:tag" content="C++">
 <meta property="article:tag" content="多线程">
@@ -24,7 +24,7 @@
 
 <link rel="icon" href="/images/favicon.png" type="image/png">
 
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"C++多线程In Practice","name":"C++多线程In Practice | zhootoo","description":"理解std::thread很多人第一次写多线程代码，崩的地方不是业务逻辑，而是 std::thread 的析构。所以这章先不急着讲怎么用，而是看看它的底层机制，把”为什么会崩”搞明白。 我们可以看看C++ 11 std::thread的源码，windows平台： 123456789101112131415class thread&#123; //.... t...","url":"https://zhootoo.github.io/2026/10/15/C-%E5%A4%9A%E7%BA%BF%E7%A8%8BIn-Practice/","inLanguage":"zh-CN","isPartOf":{"@type":"WebSite","name":"zhootoo","url":"https://zhootoo.github.io/"},"mainEntityOfPage":"https://zhootoo.github.io/2026/10/15/C-%E5%A4%9A%E7%BA%BF%E7%A8%8BIn-Practice/","datePublished":"2026-10-15T04:30:29.000Z","dateModified":"2026-10-22T07:07:07.866Z","author":{"@type":"Person","name":"zhootoo"},"publisher":{"@type":"Organization","name":"zhootoo"},"keywords":"C++, 多线程"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"C++多线程In Practice","name":"C++多线程In Practice | zhootoo","description":"理解std::thread很多人第一次写多线程代码，崩的地方不是业务逻辑，而是 std::thread 的析构。所以这章先不急着讲怎么用，而是看看它的底层机制，把”为什么会崩”搞明白。 我们可以看看C++ 11 std::thread的源码，windows平台： 123456789101112131415class thread&#123; //.... t...","url":"https://zhootoo.github.io/2026/10/15/C-%E5%A4%9A%E7%BA%BF%E7%A8%8BIn-Practice/","inLanguage":"zh-CN","isPartOf":{"@type":"WebSite","name":"zhootoo","url":"https://zhootoo.github.io/"},"mainEntityOfPage":"https://zhootoo.github.io/2026/10/15/C-%E5%A4%9A%E7%BA%BF%E7%A8%8BIn-Practice/","datePublished":"2026-10-15T04:30:29.000Z","dateModified":"2026-10-26T06:56:13.228Z","author":{"@type":"Person","name":"zhootoo"},"publisher":{"@type":"Organization","name":"zhootoo"},"keywords":"C++, 多线程"}</script>
 
 <script>
   (function () {
@@ -500,7 +500,7 @@
 <p>写个最小例子复现一下：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;thread&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">Worker</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;worker is running\n&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="function">std::thread <span class="title">t</span><span class="params">(Worker)</span></span>;</span><br><span class="line">    <span class="comment">// 忘了 join() 或 detach()</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;   <span class="comment">// t 在这里析构，joinable() 为 true，std::terminate()，进程直接 abort</span></span><br></pre></td></tr></table></figure>
 
-<p>为什么标准库要设计得这么狠？想想另外两种选择就明白了：如果析构时自动 <code>join()</code>，那么一个本该很快返回的函数可能会在无法预期的位置卡住；如果自动 <code>detach()</code>，等于悄悄放出一个没人管的后台线程，出了问题更难查。标准库选择把决定权交给写代码的人——要么 <code>join()</code> 要么 <code>detach()</code>，不表态就崩给你看。这个”崩”其实是好事，比悄悄埋雷强多了。</p>
+<p>为什么标准库要设计得这么狠？想想另外两种选择就明白了：如果析构时自动 <code>join()</code>，那么一个本该很快返回的函数可能会在无法预期的位置卡住。如果自动 <code>detach()</code>，等于悄悄放出一个没人管的后台线程，出了问题更难查。标准库选择把决定权交给写代码的人——要么 <code>join()</code> 要么 <code>detach()</code>，不表态就崩给你看。这个”崩”其实是好事，比悄悄埋雷强多了。</p>
 <p><strong>join()</strong>：等待某个线程结束，调用方会被阻塞直到该线程结束。join 之后 <code>joinable()</code> 变为 false，thread 对象和底层 OS 线程的关联被解除，可以安全析构，也可以去接收&#x2F;移动另一个线程。</p>
 <p><strong>detach()</strong>：分离OS线程和thread对象的绑定关系，即使thread对象析构，也不会影响线程的执行。但用之前得想清楚几件事：</p>
 <ul>
@@ -529,7 +529,7 @@
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> n = <span class="number">100</span>;</span><br><span class="line"><span class="function">std::thread <span class="title">t</span><span class="params">([](<span class="type">int</span> x) &#123;</span></span></span><br><span class="line"><span class="params"><span class="function">    std::cout &lt;&lt; <span class="string">&quot;thread sees x = &quot;</span> &lt;&lt; x &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span></span></span><br><span class="line"><span class="params"><span class="function">&#125;, n)</span></span>;</span><br><span class="line">n = <span class="number">200</span>;   <span class="comment">// 改的是 main 这边的 n</span></span><br><span class="line">t.<span class="built_in">join</span>();</span><br><span class="line"><span class="comment">// 输出：thread sees x = 100</span></span><br></pre></td></tr></table></figure>
 
 <p>线程构造的那一刻参数就被拷走了，之后外面怎么改都不影响。如果传递指针或者引用，要确保所访问的对象在线程执行过程中是存在的没有被销毁。如果要传递的是引用，需要在参数加上std::ref()——细节下一章展开。</p>
-<h2 id="线程传参"><a href="#线程传参" class="headerlink" title="线程传参"></a>线程传参</h2><p>传参看着简单，坑却是最多的，一个个过。</p>
+<h2 id="线程传参"><a href="#线程传参" class="headerlink" title="线程传参"></a>线程传参</h2><p>传参看着简单，坑却是最多的。</p>
 <p><strong>值传递：最安全的方式</strong></p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">ByValue</span><span class="params">(std::string s)</span> </span>&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;thread own copy: &quot;</span> &lt;&lt; s &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    std::string msg = <span class="string">&quot;hello&quot;</span>;</span><br><span class="line">    <span class="function">std::thread <span class="title">t</span><span class="params">(ByValue, msg)</span></span>;</span><br><span class="line">    msg.<span class="built_in">clear</span>();   <span class="comment">// 不影响线程内部那份拷贝</span></span><br><span class="line">    t.<span class="built_in">join</span>();</span><br><span class="line">    <span class="comment">// 输出：thread own copy: hello</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -555,9 +555,8 @@
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;memory&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">Sink</span><span class="params">(std::unique_ptr&lt;<span class="type">int</span>&gt; p)</span> </span>&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;got &quot;</span> &lt;&lt; *p &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> p = std::<span class="built_in">make_unique</span>&lt;<span class="type">int</span>&gt;(<span class="number">42</span>);</span><br><span class="line">    <span class="function">std::thread <span class="title">t</span><span class="params">(Sink, std::move(p))</span></span>;   <span class="comment">// 所有权移交线程</span></span><br><span class="line">    t.<span class="built_in">join</span>();</span><br><span class="line">    <span class="comment">// 输出：got 42</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>move 之后线程内部独占这份资源，生命周期问题同样自动解决，还没有值传递的拷贝开销，传大对象时优先考虑这个。</p>
-<p>总结成一句话：<strong>能用值传递或 move 就优先用，要共享可变状态就 std::ref() 加生命周期保证</strong>。</p>
-<h2 id="线程同步"><a href="#线程同步" class="headerlink" title="线程同步"></a>线程同步</h2><p>多线程的大头来了。先看不同步会发生什么。</p>
-<p><strong>数据竞争长什么样</strong></p>
+<h2 id="线程同步"><a href="#线程同步" class="headerlink" title="线程同步"></a>线程同步</h2><p>多线程的大头来了，先看不同步会发生什么。</p>
+<p><strong>数据竞争示例</strong></p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;thread&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> counter = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">auto</span> work = [&amp;counter] &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100000</span>; ++i) &#123;</span><br><span class="line">            ++counter;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="function">std::thread <span class="title">t1</span><span class="params">(work)</span>, <span class="title">t2</span><span class="params">(work)</span></span>;</span><br><span class="line">    t1.<span class="built_in">join</span>(); t2.<span class="built_in">join</span>();</span><br><span class="line">    std::cout &lt;&lt; counter &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>两个线程各加 10 万次，期望输出 200000，实际每次都不一样：</p>
@@ -581,7 +580,7 @@
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">std::scoped_lock <span class="title">lock</span><span class="params">(m1, m2)</span></span>;   <span class="comment">// 一次锁两个，不用操心顺序</span></span><br></pre></td></tr></table></figure>
 
 <p><strong>condition_variable：线程间等事件</strong></p>
-<p>互斥量管”别一起动”，条件变量管”等你好了通知我”。经典的生产者-消费者骨架：</p>
+<p>互斥量管”别一起动”，条件变量管”等你好了通知我”，经典的生产者-消费者骨架代码：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;condition_variable&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;queue&gt;</span></span></span><br><span class="line"></span><br><span class="line">std::mutex m;</span><br><span class="line">std::condition_variable cv;</span><br><span class="line">std::queue&lt;<span class="type">int</span>&gt; q;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 消费者：等队列里有东西</span></span><br><span class="line"><span class="function">std::thread <span class="title">consumer</span><span class="params">([&amp;] &#123;</span></span></span><br><span class="line"><span class="params"><span class="function">    std::unique_lock&lt;std::mutex&gt; lock(m);</span></span></span><br><span class="line"><span class="params"><span class="function">    cv.wait(lock, [] &#123; <span class="keyword">return</span> !q.empty(); &#125;);   <span class="comment">// 带谓词的 wait</span></span></span></span><br><span class="line"><span class="params"><span class="function">    <span class="type">int</span> item = q.front();</span></span></span><br><span class="line"><span class="params"><span class="function">    q.pop();</span></span></span><br><span class="line"><span class="params"><span class="function">    std::cout &lt;&lt; <span class="string">&quot;consumed &quot;</span> &lt;&lt; item &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span></span></span><br><span class="line"><span class="params"><span class="function">&#125;)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 生产者：放数据，发通知</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function">std::lock_guard&lt;std::mutex&gt; <span class="title">lock</span><span class="params">(m)</span></span>;</span><br><span class="line">    q.<span class="built_in">push</span>(<span class="number">42</span>);</span><br><span class="line">&#125;</span><br><span class="line">cv.notify_one();</span><br><span class="line"></span><br><span class="line">consumer.<span class="built_in">join</span>();</span><br><span class="line"><span class="comment">// 输出：consumed 42</span></span><br></pre></td></tr></table></figure>
 
 <p>几个要点：</p>
@@ -594,7 +593,7 @@
 <p>配置数据这类”一群线程读、偶尔一个线程写”的场景，<code>std::shared_mutex</code>（C++17）比普通 mutex 并发度高：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;shared_mutex&gt;</span></span></span><br><span class="line"></span><br><span class="line">std::shared_mutex rw;</span><br><span class="line"><span class="type">int</span> config = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 读线程：共享锁，多个读者可以同时持有</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function">std::shared_lock&lt;std::shared_mutex&gt; <span class="title">lock</span><span class="params">(rw)</span></span>;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;config = &quot;</span> &lt;&lt; config &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 写线程：独占锁，写的时候谁都不许进</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function">std::unique_lock&lt;std::shared_mutex&gt; <span class="title">lock</span><span class="params">(rw)</span></span>;</span><br><span class="line">    config = <span class="number">42</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>读写锁也不是免费午餐，读者太多时锁本身的管理开销可能超过普通 mutex，上线前拿真实负载压一压再定。</p>
+<p>读写锁也不是免费午餐，读者太多时锁本身的管理开销可能超过普通 mutex。</p>
 <p><strong>一次性初始化</strong></p>
 <p>顺带一提 <code>std::call_once</code>，多个线程同时跑到初始化逻辑时，保证只执行一次：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">std::once_flag flag;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">InitOnce</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    std::<span class="built_in">call_once</span>(flag, [] &#123; std::cout &lt;&lt; <span class="string">&quot;init\n&quot;</span>; &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -618,8 +617,8 @@
 <p>失败时 expected 会被更新为当前实际值，所以重试循环里不用重新 load。用 CAS 可以写出一个无锁栈的 Push：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">LockFreeStack</span> &#123;</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">Node</span> &#123;</span><br><span class="line">        T value;</span><br><span class="line">        Node* next;</span><br><span class="line">    &#125;;</span><br><span class="line">    std::atomic&lt;Node*&gt; head_&#123;<span class="literal">nullptr</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">Push</span><span class="params">(<span class="type">const</span> T&amp; value)</span> </span>&#123;</span><br><span class="line">        Node* node = <span class="keyword">new</span> Node&#123;value, <span class="literal">nullptr</span>&#125;;</span><br><span class="line">        node-&gt;next = head_.<span class="built_in">load</span>();</span><br><span class="line">        <span class="comment">// CAS：head 还是我看到的那个，就换成新 node</span></span><br><span class="line">        <span class="comment">// 失败说明有别的线程抢先改了 head，node-&gt;next 已被更新为最新值，重试</span></span><br><span class="line">        <span class="keyword">while</span> (!head_.<span class="built_in">compare_exchange_weak</span>(node-&gt;next, node)) &#123;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
-<p><code>compare_exchange_weak</code> 相比 strong 可能”伪失败”——值明明相等也返回 false，所以它必须放在循环里用，换来的是某些平台上的更高性能；不循环的场景用 strong。另外无锁栈的 Pop 要面对内存回收的难题（什么时候 delete 节点才安全），比 Push 复杂一大截，这里先不展开，知道有这回事就行。</p>
-<p><strong>内存序，先不慌</strong></p>
+<p><code>compare_exchange_weak</code> 相比 strong 可能”伪失败”——值明明相等也返回 false，所以它必须放在循环里用，换来的是某些平台上的更高性能，不循环的场景用 strong。另外无锁栈的 Pop 要面对内存回收的难题（什么时候 delete 节点才安全），比 Push 复杂一大截，这里先不展开，知道有这回事就行。</p>
+<p><strong>内存序</strong></p>
 <p>原子操作还有个 memory_order 参数，一查资料满天飞的 acquire&#x2F;release&#x2F;relaxed 很容易劝退人。实践建议：<strong>默认的 seq_cst（顺序一致性）先无脑用</strong>，它是最强保证，所有原子操作存在全局统一的顺序，不会错。等 profiler 真的告诉你原子操作的内存屏障成了瓶颈，再去研究 relaxed 那一套也不迟。多数程序到不了那个阶段。</p>
 <h2 id="promise和future"><a href="#promise和future" class="headerlink" title="promise和future"></a>promise和future</h2><p>回到 <code>std::thread</code> 本身，它有两个先天缺陷：</p>
 <ol>
@@ -651,7 +650,7 @@
 <li><strong>明确写 <code>std::launch::async</code></strong>。不写的话默认策略是 <code>async | deferred</code>，编译器可以偷懒选择 deferred——不开新线程，拖到你调 get() 时才在当前线程同步执行。想真并行就必须显式指定。</li>
 <li><strong>async 返回的 future 析构时会阻塞等结果</strong>。这是标准里专门为它规定的特殊行为（别的 future 析构不管），临时忘了 get，析构一样会等，一不留神代码就被意外串行化了。</li>
 </ol>
-<p>最后给个选择思路：简单的一次性任务用 <code>std::async</code>；要自己控制线程的生命周期就用 <code>thread + packaged_task</code>；要在线程之间设计通信协议（传值、传异常、发完成信号）才需要直接上手 <code>promise/future</code>。多数业务代码停在 async 这一层就够了，真的碰到线程池、高频任务调度的场景，再往深处走。</p>
+<p>最后给个选择思路：简单的一次性任务用 <code>std::async</code>，要自己控制线程的生命周期就用 <code>thread + packaged_task</code>，要在线程之间设计通信协议（传值、传异常、发完成信号）才需要直接上手 <code>promise/future</code>。多数业务代码停在 async 这一层就够了，真的碰到线程池、高频任务调度的场景，再往深处走。</p>
 
   </div>
 
@@ -681,13 +680,13 @@
 
   <nav class="article-actions">
     
-      <span class="article-action article-action--prev is-disabled" aria-disabled="true">
+      <a class="article-action article-action--prev" href="/2026/10/20/Cxx%E5%B7%A6%E5%80%BC%E5%8F%B3%E5%80%BC%E4%B8%8E%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89/">
         
 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-arrow-left"></use></svg>
 
         <span class="action-label">上一篇</span>
-        <span class="action-title">没有更早的文章了</span>
-      </span>
+        <span class="action-title">C++左值右值与移动语义</span>
+      </a>
     
     
       <a class="article-action article-action--next" href="/2026/10/05/%E4%B8%80%E4%B8%AA%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84%E9%80%9A%E7%94%A8%E8%AE%A2%E9%98%85%E5%8F%91%E5%B8%83%E6%A1%86%E6%9E%B6%E7%9A%84%E5%AE%9E%E7%8E%B0/">
@@ -739,7 +738,7 @@
           </span>
         </a>
       
-        <a class="related-card" href="/2026/09/26/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3STL%E5%AE%B9%E5%99%A8/">
+        <a class="related-card" href="/2026/10/20/Cxx%E5%AE%8C%E7%BE%8E%E8%BD%AC%E5%8F%91/">
           <span class="related-card__thumb">
             
 <div class="paper-thumb paper-thumb-1 paper-thumb--cover">
@@ -750,28 +749,28 @@
 
           </span>
           <span class="related-card__body">
-            <strong class="related-card__title">深入理解STL容器</strong>
-            <em class="related-card__date">2026-09-26</em>
+            <strong class="related-card__title">C++完美转发</strong>
+            <em class="related-card__date">2026-10-20</em>
           </span>
         </a>
       
-        <a class="related-card" href="/2026/08/21/%E8%AF%A6%E8%A7%A3CPP%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80/">
+        <a class="related-card" href="/2026/10/20/Cxx%E5%B7%A6%E5%80%BC%E5%8F%B3%E5%80%BC%E4%B8%8E%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89/">
           <span class="related-card__thumb">
             
 <div class="paper-thumb paper-thumb-2 paper-thumb--cover">
   
-    <img class="paper-thumb__img" src="/2026/08/21/%E8%AF%A6%E8%A7%A3CPP%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80/1.png" alt="详解CPP内存布局" loading="lazy" referrerpolicy="no-referrer">
+    <img class="paper-thumb__img" src="/2026/10/20/Cxx%E5%B7%A6%E5%80%BC%E5%8F%B3%E5%80%BC%E4%B8%8E%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89/1.png" alt="C++左值右值与移动语义" loading="lazy" referrerpolicy="no-referrer">
   
 </div>
 
           </span>
           <span class="related-card__body">
-            <strong class="related-card__title">详解CPP内存布局</strong>
-            <em class="related-card__date">2026-08-21</em>
+            <strong class="related-card__title">C++左值右值与移动语义</strong>
+            <em class="related-card__date">2026-10-20</em>
           </span>
         </a>
       
-        <a class="related-card" href="/2026/08/12/%E5%85%B3%E4%BA%8Econst-constexpr-consteval%E7%9A%84%E4%B8%80%E4%BA%9B%E5%88%86%E6%9E%90/">
+        <a class="related-card" href="/2026/09/26/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3STL%E5%AE%B9%E5%99%A8/">
           <span class="related-card__thumb">
             
 <div class="paper-thumb paper-thumb-0 paper-thumb--cover">
@@ -782,8 +781,8 @@
 
           </span>
           <span class="related-card__body">
-            <strong class="related-card__title">C++中的 const/constexpr/consteval/constinit 的一些分析</strong>
-            <em class="related-card__date">2026-08-12</em>
+            <strong class="related-card__title">深入理解STL容器</strong>
+            <em class="related-card__date">2026-09-26</em>
           </span>
         </a>
       
