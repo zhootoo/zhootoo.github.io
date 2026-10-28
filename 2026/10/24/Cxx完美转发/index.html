@@ -6,24 +6,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#f7f3e9" data-flatpaper-theme-color>
 
-<title>深入理解C++之Virtual实现机制 | zhootoo</title>
-<meta name="description" content="Linux的IO，包括input和output是一切实现的基础程序如果需要保存数据和读取数据需要使用IO，不然很难实现一些有用的功能。 stdio 标准IO sysio系统调用IO （文件IO）该怎么选呢？如果两者在某个系统都能用，优先选择标准IO。因为：1-可以屏蔽掉底层kernel的差异，运行在不同的linux版本上都是ok的，移植性好2-标准IO可以合...">
+<title>C++完美转发与引用折叠 | zhootoo</title>
+<meta name="description" content="参数转发是指在C++中将函数的参数原封不动的传递给另一个函数的技术，完美转发则是在参数传递过程中避免不必要的拷贝或者移动，保持参数的原始类型，从而提升程序的性能。 如果在参数传递过程中无法正确区分左值右值，在函数内部处理时就有可能发生不必要的拷贝或者移动，会影响程序性能。 因为如果参数是左值，在目标函数中需要调用左值接口，如果是右值，需要调用移动语义相关接口...">
 <meta property="og:type" content="article">
-<meta property="og:title" content="深入理解C++之Virtual实现机制 | zhootoo">
-<meta property="og:url" content="https://zhootoo.github.io/2025/04/14/Linux%E6%A0%87%E5%87%86IO/">
+<meta property="og:title" content="C++完美转发与引用折叠 | zhootoo">
+<meta property="og:url" content="https://zhootoo.github.io/2026/10/24/Cxx%E5%AE%8C%E7%BE%8E%E8%BD%AC%E5%8F%91/">
 <meta property="og:site_name" content="zhootoo">
-<meta property="og:description" content="Linux的IO，包括input和output是一切实现的基础程序如果需要保存数据和读取数据需要使用IO，不然很难实现一些有用的功能。 stdio 标准IO sysio系统调用IO （文件IO）该怎么选呢？如果两者在某个系统都能用，优先选择标准IO。因为：1-可以屏蔽掉底层kernel的差异，运行在不同的linux版本上都是ok的，移植性好2-标准IO可以合...">
+<meta property="og:description" content="参数转发是指在C++中将函数的参数原封不动的传递给另一个函数的技术，完美转发则是在参数传递过程中避免不必要的拷贝或者移动，保持参数的原始类型，从而提升程序的性能。 如果在参数传递过程中无法正确区分左值右值，在函数内部处理时就有可能发生不必要的拷贝或者移动，会影响程序性能。 因为如果参数是左值，在目标函数中需要调用左值接口，如果是右值，需要调用移动语义相关接口...">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2025-04-14T11:50:59.000Z">
-<meta property="article:modified_time" content="2026-10-14T12:29:52.905Z">
+<meta property="article:published_time" content="2026-10-24T07:52:44.000Z">
+<meta property="article:modified_time" content="2026-10-28T08:26:54.169Z">
 <meta property="article:author" content="zhootoo">
-<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="C++">
+<meta property="article:tag" content="完美转发">
 <meta name="twitter:card" content="summary">
-<link rel="canonical" href="https://zhootoo.github.io/2025/04/14/Linux%E6%A0%87%E5%87%86IO/">
+<link rel="canonical" href="https://zhootoo.github.io/2026/10/24/Cxx%E5%AE%8C%E7%BE%8E%E8%BD%AC%E5%8F%91/">
 
 <link rel="icon" href="/images/favicon.png" type="image/png">
 
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"深入理解C++之Virtual实现机制","name":"深入理解C++之Virtual实现机制 | zhootoo","description":"Linux的IO，包括input和output是一切实现的基础程序如果需要保存数据和读取数据需要使用IO，不然很难实现一些有用的功能。 stdio 标准IO sysio系统调用IO （文件IO）该怎么选呢？如果两者在某个系统都能用，优先选择标准IO。因为：1-可以屏蔽掉底层kernel的差异，运行在不同的linux版本上都是ok的，移植性好2-标准IO可以合...","url":"https://zhootoo.github.io/2025/04/14/Linux%E6%A0%87%E5%87%86IO/","inLanguage":"zh-CN","isPartOf":{"@type":"WebSite","name":"zhootoo","url":"https://zhootoo.github.io/"},"mainEntityOfPage":"https://zhootoo.github.io/2025/04/14/Linux%E6%A0%87%E5%87%86IO/","datePublished":"2025-04-14T11:50:59.000Z","dateModified":"2026-10-14T12:29:52.905Z","author":{"@type":"Person","name":"zhootoo"},"publisher":{"@type":"Organization","name":"zhootoo"},"keywords":"Linux"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"C++完美转发与引用折叠","name":"C++完美转发与引用折叠 | zhootoo","description":"参数转发是指在C++中将函数的参数原封不动的传递给另一个函数的技术，完美转发则是在参数传递过程中避免不必要的拷贝或者移动，保持参数的原始类型，从而提升程序的性能。 如果在参数传递过程中无法正确区分左值右值，在函数内部处理时就有可能发生不必要的拷贝或者移动，会影响程序性能。 因为如果参数是左值，在目标函数中需要调用左值接口，如果是右值，需要调用移动语义相关接口...","url":"https://zhootoo.github.io/2026/10/24/Cxx%E5%AE%8C%E7%BE%8E%E8%BD%AC%E5%8F%91/","inLanguage":"zh-CN","isPartOf":{"@type":"WebSite","name":"zhootoo","url":"https://zhootoo.github.io/"},"mainEntityOfPage":"https://zhootoo.github.io/2026/10/24/Cxx%E5%AE%8C%E7%BE%8E%E8%BD%AC%E5%8F%91/","datePublished":"2026-10-24T07:52:44.000Z","dateModified":"2026-10-28T08:26:54.169Z","author":{"@type":"Person","name":"zhootoo"},"publisher":{"@type":"Organization","name":"zhootoo"},"keywords":"C++, 完美转发"}</script>
 
 <script>
   (function () {
@@ -442,7 +443,7 @@
         </header>
         <div class="toc-content">
           
-            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Linux%E7%9A%84IO%EF%BC%8C%E5%8C%85%E6%8B%ACinput%E5%92%8Coutput%E6%98%AF%E4%B8%80%E5%88%87%E5%AE%9E%E7%8E%B0%E7%9A%84%E5%9F%BA%E7%A1%80"><span class="toc-text">Linux的IO，包括input和output是一切实现的基础</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E5%9C%BA%E6%99%AF"><span class="toc-text">问题场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E7%94%A8%E6%8A%98%E5%8F%A0"><span class="toc-text">引用折叠</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B4%E6%8E%A5%E6%94%B9%E7%94%A8%E5%BC%95%E7%94%A8%E7%9A%84%E4%B8%89%E7%A7%8D%E5%B0%9D%E8%AF%95"><span class="toc-text">直接改用引用的三种尝试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%B9%E7%94%A8%E5%87%BD%E6%95%B0%E6%A8%A1%E6%9D%BF"><span class="toc-text">改用函数模板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#T-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%A4%E7%A7%8D%E5%80%BC%E7%B1%BB%E5%88%AB%E9%83%BD%E8%83%BD%E6%8E%A5%E6%94%B6"><span class="toc-text">T&amp;&amp; 为什么两种值类别都能接收</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E7%BE%8E%E8%BD%AC%E5%8F%91"><span class="toc-text">完美转发</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B7%E5%90%8D%E5%8F%98%E9%87%8F%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AF%E5%B7%A6%E5%80%BC"><span class="toc-text">具名变量为什么是左值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%A8-static-cast-%E4%B8%8E-std-forward-%E8%BF%98%E5%8E%9F%E7%B1%BB%E5%9E%8B"><span class="toc-text">用 static_cast 与 std::forward 还原类型</span></a></li></ol></li></ol>
           
         </div>
       </section>
@@ -465,24 +466,24 @@
   
   <header class="article-header">
     
-      <a class="label-pill" href="/categories/Linux/">
+      <a class="label-pill" href="/categories/C/">
         
 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-folder"></use></svg>
 
-        Linux
+        C++
       </a>
     
-    <h1>深入理解C++之Virtual实现机制</h1>
+    <h1>C++完美转发与引用折叠</h1>
     <div class="meta-line meta-line--article">
       <span class="meta-date">
 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-calendar"></use></svg>
-2025-04-14</span>
+2026-10-24</span>
       
         <span class="meta-tags">
           
 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tag flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-tag"></use></svg>
 
-          <a class="meta-tag-link" href="/tags/Linux/">#Linux</a>
+          <a class="meta-tag-link" href="/tags/C/">#C++</a><a class="meta-tag-link" href="/tags/%E5%AE%8C%E7%BE%8E%E8%BD%AC%E5%8F%91/">#完美转发</a>
         </span>
       
     </div>
@@ -492,16 +493,69 @@
 
 
   <div class="article-content">
-    <h2 id="Linux的IO，包括input和output是一切实现的基础"><a href="#Linux的IO，包括input和output是一切实现的基础" class="headerlink" title="Linux的IO，包括input和output是一切实现的基础"></a>Linux的IO，包括input和output是一切实现的基础</h2><p>程序如果需要保存数据和读取数据需要使用IO，不然很难实现一些有用的功能。</p>
-<ul>
-<li>stdio 标准IO</li>
-<li>sysio系统调用IO （文件IO）<br>该怎么选呢？如果两者在某个系统都能用，优先选择标准IO。<br>因为：<br>1-可以屏蔽掉底层kernel的差异，运行在不同的linux版本上都是ok的，移植性好<br>2-标准IO可以合并系统调用，有buffer和cache机制，为你的调用做加速。<br>标准IO函数（需要大概介绍函数功能）</li>
-</ul>
-<p>stdio: FILE类型贯穿始终(介绍一下FILE类型)<br>fopen()：成功返回一个FILE指针，失败返回NULL，并且errno被设置,errno现在的实现已经是私有化数据，不会和其他地方发生冲突了。<br>（mode参数，6种方式需要介绍一下）</p>
-<p>fclose(),fgetc(),fputc(),fgets(),fputs(),fread(),fwrite()</p>
-<p>printf(),scanf()</p>
-<p>fseek(),ftell(),rewind()</p>
-<p>fflush()</p>
+    <p>参数转发是指在C++中将函数的参数原封不动的传递给另一个函数的技术，完美转发则是在参数传递过程中避免不必要的拷贝或者移动，保持参数的原始类型，从而提升程序的性能。</p>
+<p>如果在参数传递过程中无法正确区分左值右值，在函数内部处理时就有可能发生不必要的拷贝或者移动，会影响程序性能。</p>
+<p>因为如果参数是左值，在目标函数中需要调用左值接口，如果是右值，需要调用移动语义相关接口，这两种不同的处理方式会有不同的开销。</p>
+<p>尤其是转发函数，只负责转发不做实际处理，应尽量避免拷贝和移动，让目标函数直接处理最原始的参数，保留原始参数的左值和右值属性，提升程序性能。</p>
+<h2 id="问题场景"><a href="#问题场景" class="headerlink" title="问题场景"></a>问题场景</h2><p>一个具体的示例：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Person</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">public</span>:</span><br><span class="line">  <span class="built_in">Person</span>(string&amp;)</span><br><span class="line">  &#123;</span><br><span class="line">    cout &lt;&lt; <span class="string">&quot;左值构造\n&quot;</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">Person</span>(string&amp;&amp;)</span><br><span class="line">  &#123;</span><br><span class="line">    cout &lt;&lt; <span class="string">&quot;右值构造\n&quot;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function">Person <span class="title">make_person</span><span class="params">(string param)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">Person</span>(param);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">string name=<span class="string">&quot;test&quot;</span>;</span><br><span class="line"><span class="comment">//左值传递</span></span><br><span class="line"><span class="built_in">make_person</span>(name);</span><br><span class="line"><span class="comment">//右值传递</span></span><br><span class="line"><span class="built_in">make_person</span>(<span class="built_in">move</span>(name));</span><br><span class="line"></span><br><span class="line"><span class="comment">//代码输出“左值构造 左值构造”</span></span><br></pre></td></tr></table></figure>
+
+<p>主要问题是：</p>
+<ol>
+<li>经过make_person的转发，Person的构造函数无法区分左值右值，看起来似乎都是左值。</li>
+<li>函数make_person会导致调用者传递的实际参数被拷贝或者移动到make_person的形参，造成了浪费。（本来就是工具人，结果又移动又拷贝，浪费了CPU资源）</li>
+</ol>
+<h2 id="引用折叠"><a href="#引用折叠" class="headerlink" title="引用折叠"></a>引用折叠</h2><h3 id="直接改用引用的三种尝试"><a href="#直接改用引用的三种尝试" class="headerlink" title="直接改用引用的三种尝试"></a>直接改用引用的三种尝试</h3><p>通过上面的例子，参数传递到make_person会发生拷贝和移动？那么如何消除这种拷贝和移动就成了一个需要解决的问题，我们会很自然想到把参数改为引用形式：</p>
+<ol>
+<li>左值引用</li>
+<li>右值引用</li>
+<li>常量引用</li>
+</ol>
+<p>如果我们把函数改为Person make_person(string&amp; param)，那么传递左值没问题，但是右值会报语法错误，因为左值引用无法接收右值。</p>
+<p>如果把函数改为Person make_person(string&amp;&amp; param),右值引用没问题，但是左值又会出现编译错误。</p>
+<p>如果我们把函数改为Person make_person(const string&amp; param),那么左值右值都不会出现问题。但是return Person(param);这一行有回报错，因为常量引用为参数增加了const属性，这和Person的参数不匹配，为参数增加const属性也改变了参数的属性，将会为其增加额外的限制，我们希望的是参数原封不动传递到目标函数。</p>
+<p>所以通过直接使用引用看来无法实现完美转发，需要另辟蹊径。我们使用C++的模板函数自动类型推导机制，让它根据实际参数类型自动推导，这个注意应该不错。</p>
+<h3 id="改用函数模板"><a href="#改用函数模板" class="headerlink" title="改用函数模板"></a>改用函数模板</h3><p>所以把make_person函数改为模板函数：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//如果使用T&amp;则只能匹配左值，右值匹配不到</span></span><br><span class="line"><span class="comment">//如果使用T&amp;&amp;，发现左值右值都可以匹配到了，编译器不会报错，</span></span><br><span class="line"><span class="comment">//程序最后输出  “左值构造 左值构造”</span></span><br><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span></span><br><span class="line"><span class="function">Person <span class="title">make_person</span><span class="params">(T&amp;&amp; param)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">Person</span>(param);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>虽然最终的目标函数，也就是Person的构造还是无法区分是左值还是右值，但是至少我们解决了一个问题，就是让中间人函数的形参至少不会发生拷贝和移动。</p>
+<h3 id="T-为什么两种值类别都能接收"><a href="#T-为什么两种值类别都能接收" class="headerlink" title="T&amp;&amp; 为什么两种值类别都能接收"></a>T&amp;&amp; 为什么两种值类别都能接收</h3><p>可是为什么T&amp;&amp;既能接受左值又能接受右值呢？我们做一些实验来验证，看看现在在make_person模版函数中，T&amp;&amp;的真实类型：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span></span><br><span class="line"><span class="function">Person <span class="title">make_person</span><span class="params">(T&amp;&amp; param)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  std::cout&lt;&lt; std::is_lvalue_reference&lt;T&gt;::value &lt;&lt; std::endl;</span><br><span class="line">  std::cout&lt;&lt; std::is_rvalue_reference&lt;T&gt;::value &lt;&lt; std::endl;</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">Person</span>(param);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">string name=<span class="string">&quot;test&quot;</span>;</span><br><span class="line"><span class="comment">//左值传递</span></span><br><span class="line"><span class="built_in">make_person</span>(name);</span><br><span class="line"><span class="comment">//右值传递</span></span><br><span class="line"><span class="built_in">make_person</span>(<span class="built_in">move</span>(name));</span><br><span class="line"><span class="comment">//输出：1 0      0 1</span></span><br></pre></td></tr></table></figure>
+
+<p>从上面的测试可以知道T&amp;&amp;正确识别了传递的参数的对应属性。</p>
+<p>可是为什么T&amp;&amp;为什么可以正确识别左值右值呢？</p>
+<p>T&amp;&amp;是C++11引入的新语法，对 template<typename T> void f(T&amp;&amp; param)的函数模板，标准规定推导规则如下：</p>
+<table>
+<thead>
+<tr>
+<th align="left">实参值类别</th>
+<th align="left">T 推导为</th>
+<th align="left">T&amp;&amp; 折叠后 param 类型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">左值</td>
+<td align="left"><code>X&amp;</code></td>
+<td align="left"><code>X&amp;</code></td>
+</tr>
+<tr>
+<td align="left">右值</td>
+<td align="left"><code>X</code></td>
+<td align="left"><code>X&amp;&amp;</code></td>
+</tr>
+</tbody></table>
+<p>所以make_person(name)传递的实参是个左值，最终推导出的T&amp;&amp;类型是int&amp;，而make_person(move(name))传递的实参是个右值，最终推导出的T&amp;&amp;是个int&amp;&amp;。</p>
+<p>这就是C++的万能引用和引用折叠，可以当个结论记住T&amp;&amp;的模板参数可以最终识别出正确的左值或者右值引用。</p>
+<h2 id="完美转发"><a href="#完美转发" class="headerlink" title="完美转发"></a>完美转发</h2><h3 id="具名变量为什么是左值"><a href="#具名变量为什么是左值" class="headerlink" title="具名变量为什么是左值"></a>具名变量为什么是左值</h3><p>为什么T&amp;&amp;可以被正确识别了，但是最终的Person构造还是不能自动调用左值右值版本呢？</p>
+<p>因为在C++里，变量或者表达式的类型和其值类别是不同的概念，即使变量类型是右值引用，比如int&amp;&amp; a &#x3D; getNumber(), 但是表达式a的值类别仍然是左值，因为它有一个具体的名字和身份来指向某个空间了，所以a就成了左值，虽然a的类型是右值引用int&amp;&amp;。</p>
+<p>所以，虽然类型我们区分了，但是因为在这个函数里我们有一个具名对象param，所以param表达式的值类别一定是左值，这就是为什么调用Person的构造函数还是区分不开的原因。</p>
+<h3 id="用-static-cast-与-std-forward-还原类型"><a href="#用-static-cast-与-std-forward-还原类型" class="headerlink" title="用 static_cast 与 std::forward 还原类型"></a>用 static_cast 与 std::forward 还原类型</h3><p>怎么解决呢？</p>
+<p>一个简单的方式是对表达式再进行一次转换<code>(T&amp;&amp;)param</code>，因为T&amp;&amp;是可以正确代表左值引用和右值引用的，我们把表达式在返回时再做一次转换就行了。但是在C++中我们一般使用C++的转换<code>static_cast&lt;T&amp;&amp;&gt;(param)</code>，而不使用C语言风格。</p>
+<p>所以最终这样就会调用最终正确的构造版本：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span></span><br><span class="line"><span class="function">Person <span class="title">make_person</span><span class="params">(T&amp;&amp; param)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">Person</span>(<span class="keyword">static_cast</span>&lt;T&amp;&amp;&gt;(param));</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//上述输出会显示 正确的左值构造和右值构造</span></span><br></pre></td></tr></table></figure>
+
+<p>C++中提供了一个函数做这个事情，但是其实做的是跟static_cast一样的事，只不过用标准的函数会让意图更加清晰：</p>
+<p><code>std::forward&lt;T&gt;(param)</code>，它的代码内部使用的和<code>static_cast&lt;T&amp;&amp;&gt;</code>其实是一件事。</p>
 
   </div>
 
@@ -531,22 +585,22 @@
 
   <nav class="article-actions">
     
-      <a class="article-action article-action--prev" href="/2025/08/26/%E5%B0%8F%E8%AF%9D%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">
+      <span class="article-action article-action--prev is-disabled" aria-disabled="true">
         
 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-arrow-left"></use></svg>
 
         <span class="action-label">上一篇</span>
-        <span class="action-title">谈谈计算机网络为什么这么设计</span>
-      </a>
+        <span class="action-title">没有更早的文章了</span>
+      </span>
     
     
-      <span class="article-action article-action--next is-disabled" aria-disabled="true">
+      <a class="article-action article-action--next" href="/2026/10/20/Cxx%E5%B7%A6%E5%80%BC%E5%8F%B3%E5%80%BC%E4%B8%8E%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89/">
         <span class="action-label">下一篇</span>
-        <span class="action-title">已经是最新的一篇</span>
+        <span class="action-title">C++左值右值与移动语义</span>
         
 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-arrow-right"></use></svg>
 
-      </span>
+      </a>
     
   </nav>
 </article>
@@ -573,23 +627,23 @@
     </header>
     <div class="related-paper__grid">
       
-        <a class="related-card" href="/2026/08/14/%E8%B0%88%E8%B0%88Linux%E8%BF%9B%E7%A8%8B/">
+        <a class="related-card" href="/2026/10/20/Cxx%E5%B7%A6%E5%80%BC%E5%8F%B3%E5%80%BC%E4%B8%8E%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89/">
           <span class="related-card__thumb">
             
 <div class="paper-thumb paper-thumb-0 paper-thumb--cover">
   
-    <img class="paper-thumb__img" src="/images/cover/camera.webp" alt="" loading="lazy" referrerpolicy="no-referrer">
+    <img class="paper-thumb__img" src="/2026/10/20/Cxx%E5%B7%A6%E5%80%BC%E5%8F%B3%E5%80%BC%E4%B8%8E%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89/1.png" alt="C++左值右值与移动语义" loading="lazy" referrerpolicy="no-referrer">
   
 </div>
 
           </span>
           <span class="related-card__body">
-            <strong class="related-card__title">谈谈Linux进程</strong>
-            <em class="related-card__date">2026-08-14</em>
+            <strong class="related-card__title">C++左值右值与移动语义</strong>
+            <em class="related-card__date">2026-10-20</em>
           </span>
         </a>
       
-        <a class="related-card" href="/2026/06/26/Linux%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/">
+        <a class="related-card" href="/2026/09/26/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3STL%E5%AE%B9%E5%99%A8/">
           <span class="related-card__thumb">
             
 <div class="paper-thumb paper-thumb-1 paper-thumb--cover">
@@ -600,8 +654,40 @@
 
           </span>
           <span class="related-card__body">
-            <strong class="related-card__title">Linux网络编程</strong>
-            <em class="related-card__date">2026-06-26</em>
+            <strong class="related-card__title">深入理解STL容器</strong>
+            <em class="related-card__date">2026-09-26</em>
+          </span>
+        </a>
+      
+        <a class="related-card" href="/2026/08/21/%E8%AF%A6%E8%A7%A3CPP%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80/">
+          <span class="related-card__thumb">
+            
+<div class="paper-thumb paper-thumb-2 paper-thumb--cover">
+  
+    <img class="paper-thumb__img" src="/2026/08/21/%E8%AF%A6%E8%A7%A3CPP%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80/1.png" alt="详解CPP内存布局" loading="lazy" referrerpolicy="no-referrer">
+  
+</div>
+
+          </span>
+          <span class="related-card__body">
+            <strong class="related-card__title">详解CPP内存布局</strong>
+            <em class="related-card__date">2026-08-21</em>
+          </span>
+        </a>
+      
+        <a class="related-card" href="/2026/08/12/%E5%85%B3%E4%BA%8Econst-constexpr-consteval%E7%9A%84%E4%B8%80%E4%BA%9B%E5%88%86%E6%9E%90/">
+          <span class="related-card__thumb">
+            
+<div class="paper-thumb paper-thumb-0 paper-thumb--cover">
+  
+    <img class="paper-thumb__img" src="/images/cover/port.webp" alt="" loading="lazy" referrerpolicy="no-referrer">
+  
+</div>
+
+          </span>
+          <span class="related-card__body">
+            <strong class="related-card__title">C++中的 const/constexpr/consteval/constinit 的一些分析</strong>
+            <em class="related-card__date">2026-08-12</em>
           </span>
         </a>
       

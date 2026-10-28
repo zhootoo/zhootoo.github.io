@@ -1,26 +1,29 @@
 <!doctype html>
 
-<html lang="zh-CN">
+<html lang="zh-CN" data-fancybox-enabled="1">
 <head>
   <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#f7f3e9" data-flatpaper-theme-color>
 
-<title>归档：2025/04 | zhootoo</title>
-<meta name="description" content="归档：2025&#x2F;04收录 1 篇文章，包括深入理解C++之Virtual实现机制。">
-<meta property="og:type" content="website">
-<meta property="og:title" content="归档：2025&#x2F;04 | zhootoo">
-<meta property="og:url" content="https://zhootoo.github.io/archives/2025/04/">
+<title>Linux IO | zhootoo</title>
+<meta name="description" content="Linux的IO，包括input和output是一切实现的基础程序如果需要保存数据和读取数据需要使用IO，不然很难实现一些有用的功能。 stdio 标准IO sysio系统调用IO （文件IO）该怎么选呢？如果两者在某个系统都能用，优先选择标准IO。因为：1-可以屏蔽掉底层kernel的差异，运行在不同的linux版本上都是ok的，移植性好2-标准IO可以合...">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux IO | zhootoo">
+<meta property="og:url" content="https://zhootoo.github.io/2026/04/14/Linux%E6%A0%87%E5%87%86IO/">
 <meta property="og:site_name" content="zhootoo">
-<meta property="og:description" content="归档：2025&#x2F;04收录 1 篇文章，包括深入理解C++之Virtual实现机制。">
+<meta property="og:description" content="Linux的IO，包括input和output是一切实现的基础程序如果需要保存数据和读取数据需要使用IO，不然很难实现一些有用的功能。 stdio 标准IO sysio系统调用IO （文件IO）该怎么选呢？如果两者在某个系统都能用，优先选择标准IO。因为：1-可以屏蔽掉底层kernel的差异，运行在不同的linux版本上都是ok的，移植性好2-标准IO可以合...">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-04-14T11:28:59.000Z">
+<meta property="article:modified_time" content="2026-10-28T08:34:59.234Z">
 <meta property="article:author" content="zhootoo">
+<meta property="article:tag" content="Linux">
 <meta name="twitter:card" content="summary">
-<link rel="canonical" href="https://zhootoo.github.io/archives/2025/04/">
+<link rel="canonical" href="https://zhootoo.github.io/2026/04/14/Linux%E6%A0%87%E5%87%86IO/">
 
 <link rel="icon" href="/images/favicon.png" type="image/png">
 
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","headline":"归档：2025/04 | zhootoo","name":"归档：2025/04 | zhootoo","description":"归档：2025/04收录 1 篇文章，包括深入理解C++之Virtual实现机制。","url":"https://zhootoo.github.io/archives/2025/04/","inLanguage":"zh-CN","isPartOf":{"@type":"WebSite","name":"zhootoo","url":"https://zhootoo.github.io/"},"about":"归档：2025/04"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Linux IO","name":"Linux IO | zhootoo","description":"Linux的IO，包括input和output是一切实现的基础程序如果需要保存数据和读取数据需要使用IO，不然很难实现一些有用的功能。 stdio 标准IO sysio系统调用IO （文件IO）该怎么选呢？如果两者在某个系统都能用，优先选择标准IO。因为：1-可以屏蔽掉底层kernel的差异，运行在不同的linux版本上都是ok的，移植性好2-标准IO可以合...","url":"https://zhootoo.github.io/2026/04/14/Linux%E6%A0%87%E5%87%86IO/","inLanguage":"zh-CN","isPartOf":{"@type":"WebSite","name":"zhootoo","url":"https://zhootoo.github.io/"},"mainEntityOfPage":"https://zhootoo.github.io/2026/04/14/Linux%E6%A0%87%E5%87%86IO/","datePublished":"2026-04-14T11:28:59.000Z","dateModified":"2026-10-28T08:34:59.234Z","author":{"@type":"Person","name":"zhootoo"},"publisher":{"@type":"Organization","name":"zhootoo"},"keywords":"Linux"}</script>
 
 <script>
   (function () {
@@ -56,12 +59,15 @@
   
 
   
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css">
+<script defer src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+
 
   
 <meta name="generator" content="Hexo 8.1.2"></head>
 
 <body
-  class="is-list tag-style-tape bg-style-default"
+  class="is-post tag-style-tape bg-style-default"
   data-default-accent="green"
   data-code-theme="simple"
   data-note-style="sticky"
@@ -163,7 +169,7 @@
       
     
       
-        <div class="site-nav-item has-children active">
+        <div class="site-nav-item has-children">
           <button class="site-nav-link site-nav-parent" type="button" aria-haspopup="true" aria-expanded="false">
             
 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-folder"></use></svg>
@@ -186,7 +192,7 @@
                 <span>标签</span>
               </a>
             
-              <a role="menuitem" class="active" href="/archives/">
+              <a role="menuitem" class="" href="/archives/">
                 
 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-archive flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-archive"></use></svg>
 
@@ -248,7 +254,7 @@
 
 
   
-  <main class="paper-shell ">
+  <main class="paper-shell paper-shell--article">
     
 
 <aside id="paper-sidebar-drawer" class="paper-sidebar paper-sidebar--right" aria-label="侧边栏">
@@ -305,8 +311,8 @@
         
       
         
-          <div class="drawer-nav-group is-open active">
-            <button class="drawer-nav-parent" type="button" aria-expanded="true">
+          <div class="drawer-nav-group">
+            <button class="drawer-nav-parent" type="button" aria-expanded="false">
               
 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-folder"></use></svg>
 
@@ -328,7 +334,7 @@
                   <span>标签</span>
                 </a>
               
-                <a class="active" href="/archives/">
+                <a class="" href="/archives/">
                   
 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-archive flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-archive"></use></svg>
 
@@ -422,90 +428,28 @@
   
 
   
-    <section class="side-card categories-card">
-      <h2>
-<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-folder"></use></svg>
-分类</h2>
-      
-        <a href="/categories/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">
-          <span class="dot dot-0"></span>
-          <strong>性能优化</strong>
-          <em>1</em>
-        </a>
-      
-        <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">
-          <span class="dot dot-1"></span>
-          <strong>深度学习</strong>
-          <em>1</em>
-        </a>
-      
-        <a href="/categories/C/">
-          <span class="dot dot-2"></span>
-          <strong>C++</strong>
-          <em>6</em>
-        </a>
-      
-        <a href="/categories/AI-Agent/">
-          <span class="dot dot-3"></span>
-          <strong>AI-Agent</strong>
-          <em>1</em>
-        </a>
-      
-        <a href="/categories/Linux/">
-          <span class="dot dot-0"></span>
-          <strong>Linux</strong>
-          <em>2</em>
-        </a>
-      
-        <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">
-          <span class="dot dot-1"></span>
-          <strong>计算机网络</strong>
-          <em>2</em>
-        </a>
-      
-    </section>
+    <div class="post-sticky-stack">
+      <section class="side-card toc-card">
+        <header class="toc-card__head">
+          <h2>
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-table-of-contents flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-table-of-contents"></use></svg>
+文章目录</h2>
+          <button type="button" class="toc-toggle-all" data-action="toggle-toc" aria-pressed="false" aria-label="展开全部目录" title="展开全部目录">
+            
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-chevron-down"></use></svg>
 
-    <section class="side-card tag-card">
-      <header class="tag-card__head">
-        <h2>
-<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-flame flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-flame"></use></svg>
-热门标签</h2>
-        <a class="tag-card__more" href="/tags/">
-          <span>查看全部</span>
+          </button>
+        </header>
+        <div class="toc-content">
           
-<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-arrow-right"></use></svg>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Linux%E7%9A%84IO%EF%BC%8C%E5%8C%85%E6%8B%ACinput%E5%92%8Coutput%E6%98%AF%E4%B8%80%E5%88%87%E5%AE%9E%E7%8E%B0%E7%9A%84%E5%9F%BA%E7%A1%80"><span class="toc-text">Linux的IO，包括input和output是一切实现的基础</span></a></li></ol>
+          
+        </div>
+      </section>
+      
 
-        </a>
-      </header>
-      <div class="tag-cloud">
-        
-        
-          <a class="tag-chip tag-chip-0" href="/tags/C/">C++</a>
-        
-          <a class="tag-chip tag-chip-1" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
-        
-          <a class="tag-chip tag-chip-2" href="/tags/Linux/">Linux</a>
-        
-          <a class="tag-chip tag-chip-3" href="/tags/LLM/">LLM</a>
-        
-          <a class="tag-chip tag-chip-4" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">多线程</a>
-        
-          <a class="tag-chip tag-chip-5" href="/tags/CPU/">CPU</a>
-        
-          <a class="tag-chip tag-chip-0" href="/tags/%E7%BC%93%E5%AD%98/">缓存</a>
-        
-          <a class="tag-chip tag-chip-1" href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">性能优化</a>
-        
-          <a class="tag-chip tag-chip-2" href="/tags/%E5%B9%B6%E5%8F%91/">并发</a>
-        
-          <a class="tag-chip tag-chip-3" href="/tags/PyTorch/">PyTorch</a>
-        
-          <a class="tag-chip tag-chip-4" href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a>
-        
-          <a class="tag-chip tag-chip-5" href="/tags/AI-Agent/">AI-Agent</a>
-        
-      </div>
-    </section>
+
+    </div>
   
 
   
@@ -514,80 +458,161 @@
 
     <section class="paper-main">
       
-<section class="archive-paper">
+
+<div class="article-tape-wrap">
+<span class="tape tape--top-right" aria-hidden="true"></span>
+<article class="article-paper">
   
-    <h1>归档</h1>
-  
-  <div class="archive-list">
+  <header class="article-header">
     
-      <a class="archive-item" href="/2025/04/14/Linux%E6%A0%87%E5%87%86IO/">
-        <span>2025-04-14</span>
-        <strong>深入理解C++之Virtual实现机制</strong>
-        <em></em>
+      <a class="label-pill" href="/categories/Linux/">
+        
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-folder"></use></svg>
+
+        Linux
       </a>
     
+    <h1>Linux IO</h1>
+    <div class="meta-line meta-line--article">
+      <span class="meta-date">
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-calendar"></use></svg>
+2026-04-14</span>
+      
+        <span class="meta-tags">
+          
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tag flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-tag"></use></svg>
+
+          <a class="meta-tag-link" href="/tags/Linux/">#Linux</a>
+        </span>
+      
+    </div>
+  </header>
+
+  
+
+
+  <div class="article-content">
+    <h2 id="Linux的IO，包括input和output是一切实现的基础"><a href="#Linux的IO，包括input和output是一切实现的基础" class="headerlink" title="Linux的IO，包括input和output是一切实现的基础"></a>Linux的IO，包括input和output是一切实现的基础</h2><p>程序如果需要保存数据和读取数据需要使用IO，不然很难实现一些有用的功能。</p>
+<ul>
+<li>stdio 标准IO</li>
+<li>sysio系统调用IO （文件IO）<br>该怎么选呢？如果两者在某个系统都能用，优先选择标准IO。<br>因为：<br>1-可以屏蔽掉底层kernel的差异，运行在不同的linux版本上都是ok的，移植性好<br>2-标准IO可以合并系统调用，有buffer和cache机制，为你的调用做加速。<br>标准IO函数（需要大概介绍函数功能）</li>
+</ul>
+<p>stdio: FILE类型贯穿始终(介绍一下FILE类型)<br>fopen()：成功返回一个FILE指针，失败返回NULL，并且errno被设置,errno现在的实现已经是私有化数据，不会和其他地方发生冲突了。<br>（mode参数，6种方式需要介绍一下）</p>
+<p>fclose(),fgetc(),fputc(),fgets(),fputs(),fread(),fwrite()</p>
+<p>printf(),scanf()</p>
+<p>fseek(),ftell(),rewind()</p>
+<p>fflush()</p>
+
   </div>
-</section>
+
+  <footer class="article-reactions">
+    <div class="reaction-group">
+      <button type="button" class="reaction reaction--comment" aria-label="跳转到评论区" data-action="scroll-to-comments">
+        
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-message-circle"></use></svg>
+
+      </button>
+      <span class="reaction-label">评论</span>
+      
+    </div>
+    <div class="reaction-group reaction-group--right">
+      
+      <button type="button" class="reaction reaction--share" aria-label="分享" data-action="share">
+        
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-share-2 flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-share-2"></use></svg>
+
+      </button>
+      <span class="reaction-label">分享</span>
+    </div>
+  </footer>
+
+  
 
 
+  <nav class="article-actions">
+    
+      <a class="article-action article-action--prev" href="/2026/06/26/Linux%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/">
+        
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-arrow-left"></use></svg>
+
+        <span class="action-label">上一篇</span>
+        <span class="action-title">Linux网络编程</span>
+      </a>
+    
+    
+      <a class="article-action article-action--next" href="/2025/08/26/%E5%B0%8F%E8%AF%9D%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">
+        <span class="action-label">下一篇</span>
+        <span class="action-title">谈谈计算机网络为什么这么设计</span>
+        
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-arrow-right"></use></svg>
+
+      </a>
+    
+  </nav>
+</article>
+</div>
+
+<button type="button" class="back-to-top" data-action="scroll-to-top" aria-label="返回顶部" hidden>
+  
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-arrow-up"></use></svg>
+
+</button>
+
+
+  <section class="related-paper">
+    <header class="related-paper__head">
+      <h2>
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-link"></use></svg>
+相关文章</h2>
+      <a class="related-paper__more" href="/archives/">
+        <span>查看更多</span>
+        
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-arrow-right"></use></svg>
+
+      </a>
+    </header>
+    <div class="related-paper__grid">
+      
+        <a class="related-card" href="/2026/08/14/%E8%B0%88%E8%B0%88Linux%E8%BF%9B%E7%A8%8B/">
+          <span class="related-card__thumb">
+            
+<div class="paper-thumb paper-thumb-0 paper-thumb--cover">
+  
+    <img class="paper-thumb__img" src="/images/cover/camera.webp" alt="" loading="lazy" referrerpolicy="no-referrer">
+  
+</div>
+
+          </span>
+          <span class="related-card__body">
+            <strong class="related-card__title">谈谈Linux进程</strong>
+            <em class="related-card__date">2026-08-14</em>
+          </span>
+        </a>
+      
+        <a class="related-card" href="/2026/06/26/Linux%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/">
+          <span class="related-card__thumb">
+            
+<div class="paper-thumb paper-thumb-1 paper-thumb--cover">
+  
+    <img class="paper-thumb__img" src="/images/cover/mountain.webp" alt="" loading="lazy" referrerpolicy="no-referrer">
+  
+</div>
+
+          </span>
+          <span class="related-card__body">
+            <strong class="related-card__title">Linux网络编程</strong>
+            <em class="related-card__date">2026-06-26</em>
+          </span>
+        </a>
+      
+    </div>
+  </section>
 
 
       
 
 
     </section>
-    
-      <aside class="paper-sidebar paper-sidebar--left">
-  
-  
-
-  <section class="side-card recent-card" data-random-posts-limit="5" data-random-posts-url="/flatpaper-random-posts.json" data-random-posts-current="/archives/2025/04/index.html">
-    <h2>
-<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shuffle flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-shuffle"></use></svg>
-随机文章</h2>
-    <ul class="recent-list js-random-posts">
-      
-        <li>
-          <a class="recent-item" href="/2026/10/20/Cxx%E5%AE%8C%E7%BE%8E%E8%BD%AC%E5%8F%91/">
-            <strong>C++完美转发</strong>
-            <em>2026-10-20</em>
-          </a>
-        </li>
-      
-        <li>
-          <a class="recent-item" href="/2026/10/20/Cxx%E5%B7%A6%E5%80%BC%E5%8F%B3%E5%80%BC%E4%B8%8E%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89/">
-            <strong>C++左值右值与移动语义</strong>
-            <em>2026-10-20</em>
-          </a>
-        </li>
-      
-        <li>
-          <a class="recent-item" href="/2026/10/15/C-%E5%A4%9A%E7%BA%BF%E7%A8%8BIn-Practice/">
-            <strong>C++多线程In Practice</strong>
-            <em>2026-10-15</em>
-          </a>
-        </li>
-      
-        <li>
-          <a class="recent-item" href="/2026/10/05/%E4%B8%80%E4%B8%AA%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84%E9%80%9A%E7%94%A8%E8%AE%A2%E9%98%85%E5%8F%91%E5%B8%83%E6%A1%86%E6%9E%B6%E7%9A%84%E5%AE%9E%E7%8E%B0/">
-            <strong>一个多线程安全的通用订阅发布框架的实现</strong>
-            <em>2026-10-05</em>
-          </a>
-        </li>
-      
-        <li>
-          <a class="recent-item" href="/2026/10/01/C%E5%8D%8F%E7%A8%8B/">
-            <strong>了解C++协程</strong>
-            <em>2026-10-01</em>
-          </a>
-        </li>
-      
-    </ul>
-  </section>
-
-
-</aside>
-
     
   </main>
 
