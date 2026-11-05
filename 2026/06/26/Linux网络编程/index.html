@@ -15,7 +15,7 @@
 <meta property="og:description" content="网络编程套接字socket跨主机传输需要注意的问题 字节序问题假设要存储的数字为：0x12345678 1- 大端存储：低地址存放高位字节，高地址存放低位字节 0x12345678 地址由小到大–&gt;2- 小端存储：低地址存放低位字节，高地址存放高位字节 0x78563412 地址由小到大–&gt;现在的解决方法是：区分主机字节序和网络字节序1- 主机字...">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-06-26T11:46:36.000Z">
-<meta property="article:modified_time" content="2026-10-25T02:39:06.722Z">
+<meta property="article:modified_time" content="2026-11-05T08:17:23.162Z">
 <meta property="article:author" content="zhootoo">
 <meta property="article:tag" content="Linux">
 <meta property="article:tag" content="socket">
@@ -25,7 +25,7 @@
 
 <link rel="icon" href="/images/favicon.png" type="image/png">
 
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Linux网络编程","name":"Linux网络编程 | zhootoo","description":"网络编程套接字socket跨主机传输需要注意的问题 字节序问题假设要存储的数字为：0x12345678 1- 大端存储：低地址存放高位字节，高地址存放低位字节 0x12345678 地址由小到大–&gt;2- 小端存储：低地址存放低位字节，高地址存放高位字节 0x78563412 地址由小到大–&gt;现在的解决方法是：区分主机字节序和网络字节序1- 主机字...","url":"https://zhootoo.github.io/2026/06/26/Linux%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/","inLanguage":"zh-CN","isPartOf":{"@type":"WebSite","name":"zhootoo","url":"https://zhootoo.github.io/"},"mainEntityOfPage":"https://zhootoo.github.io/2026/06/26/Linux%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/","datePublished":"2026-06-26T11:46:36.000Z","dateModified":"2026-10-25T02:39:06.722Z","author":{"@type":"Person","name":"zhootoo"},"publisher":{"@type":"Organization","name":"zhootoo"},"keywords":"Linux, 网络编程, socket"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Linux网络编程","name":"Linux网络编程 | zhootoo","description":"网络编程套接字socket跨主机传输需要注意的问题 字节序问题假设要存储的数字为：0x12345678 1- 大端存储：低地址存放高位字节，高地址存放低位字节 0x12345678 地址由小到大–&gt;2- 小端存储：低地址存放低位字节，高地址存放高位字节 0x78563412 地址由小到大–&gt;现在的解决方法是：区分主机字节序和网络字节序1- 主机字...","url":"https://zhootoo.github.io/2026/06/26/Linux%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/","inLanguage":"zh-CN","isPartOf":{"@type":"WebSite","name":"zhootoo","url":"https://zhootoo.github.io/"},"mainEntityOfPage":"https://zhootoo.github.io/2026/06/26/Linux%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/","datePublished":"2026-06-26T11:46:36.000Z","dateModified":"2026-11-05T08:17:23.162Z","author":{"@type":"Person","name":"zhootoo"},"publisher":{"@type":"Organization","name":"zhootoo"},"keywords":"Linux, 网络编程, socket"}</script>
 
 <script>
   (function () {
@@ -501,7 +501,8 @@
 <h3 id="类型长度问题"><a href="#类型长度问题" class="headerlink" title="类型长度问题"></a>类型长度问题</h3><p>相同的类型在不同的机器上，长度可能不一样。<br>比如：int 在32位机器上是4字节，在16位机器上是2字节。<br>解决方案：int32_t, uint_32_t, int16_t, uint16_t, int8_t, uint8_t<br>这几个类型都是固定长度的，在不同的机器上长度是固定的。</p>
 <h2 id="SOCKET是什么"><a href="#SOCKET是什么" class="headerlink" title="SOCKET是什么"></a>SOCKET是什么</h2><p>介绍一下Linux 上socket的概念<br>int socket(int domain, int type, int protocol)<br>domain:<br>介绍几种不同的domain类型<br>AF_UNIX: 本地通信<br>AF_LOCAL:<br>AF_INET:Ipv4<br>AF_INET6:Ipv6</p>
 <p>type:(详细介绍一下各项)<br>SOCK_STREAM: 流式套接字<br>SOCK_DGRAM: 数据报套接字<br>SOCK_RAW: 原始套接字<br>SOCK_SEQPACKET: 可靠的有序数据报套接字</p>
-<h2 id="报式套接字"><a href="#报式套接字" class="headerlink" title="报式套接字"></a>报式套接字</h2><h2 id="流式套接字"><a href="#流式套接字" class="headerlink" title="流式套接字"></a>流式套接字</h2>
+<h2 id="报式套接字"><a href="#报式套接字" class="headerlink" title="报式套接字"></a>报式套接字</h2><h2 id="流式套接字"><a href="#流式套接字" class="headerlink" title="流式套接字"></a>流式套接字</h2><p>To be continue…..</p>
+
   </div>
 
   <footer class="article-reactions">

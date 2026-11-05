@@ -7,16 +7,16 @@
 <meta name="theme-color" content="#f7f3e9" data-flatpaper-theme-color>
 
 <title>C++左值右值与移动语义 | zhootoo</title>
-<meta name="description" content="左值和右值是理解现代 C++ 性能模型的一把钥匙：它决定了对象会在什么时候被拷贝、什么时候能把资源”偷”过来，也是后续理解完美转发、std::forward 的前置知识。 本文按下面这条线索展开： 什么是左值、什么是右值——回归 C++98 的值类别，并给出一个可操作的判断法则； 为什么要有移动语义——临时对象带来的拷贝冗余，以及编译器优化的能力边界； 移动...">
+<meta name="description" content="左值和右值是理解现代 C++ 性能模型的一把钥匙：它决定了对象会在什么时候被拷贝、什么时候能把资源”偷”过来，也是后续理解完美转发、std::forward 的前置知识。 本文按下面这条线索展开： 什么是左值、什么是右值——回归 C++98 的值类别，并给出一个可操作的判断法则 为什么要有移动语义——临时对象带来的拷贝冗余，以及编译器优化的能力边界 移动语义...">
 <meta property="og:type" content="article">
 <meta property="og:title" content="C++左值右值与移动语义 | zhootoo">
 <meta property="og:url" content="https://zhootoo.github.io/2026/10/20/Cxx%E5%B7%A6%E5%80%BC%E5%8F%B3%E5%80%BC%E4%B8%8E%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89/">
 <meta property="og:site_name" content="zhootoo">
-<meta property="og:description" content="左值和右值是理解现代 C++ 性能模型的一把钥匙：它决定了对象会在什么时候被拷贝、什么时候能把资源”偷”过来，也是后续理解完美转发、std::forward 的前置知识。 本文按下面这条线索展开： 什么是左值、什么是右值——回归 C++98 的值类别，并给出一个可操作的判断法则； 为什么要有移动语义——临时对象带来的拷贝冗余，以及编译器优化的能力边界； 移动...">
+<meta property="og:description" content="左值和右值是理解现代 C++ 性能模型的一把钥匙：它决定了对象会在什么时候被拷贝、什么时候能把资源”偷”过来，也是后续理解完美转发、std::forward 的前置知识。 本文按下面这条线索展开： 什么是左值、什么是右值——回归 C++98 的值类别，并给出一个可操作的判断法则 为什么要有移动语义——临时对象带来的拷贝冗余，以及编译器优化的能力边界 移动语义...">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://zhootoo.github.io/2026/10/20/Cxx%E5%B7%A6%E5%80%BC%E5%8F%B3%E5%80%BC%E4%B8%8E%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89/1.png">
 <meta property="article:published_time" content="2026-10-20T13:53:36.000Z">
-<meta property="article:modified_time" content="2026-10-26T09:52:32.454Z">
+<meta property="article:modified_time" content="2026-11-05T08:18:08.480Z">
 <meta property="article:author" content="zhootoo">
 <meta property="article:tag" content="C++">
 <meta property="article:tag" content="值类别">
@@ -27,7 +27,7 @@
 
 <link rel="icon" href="/images/favicon.png" type="image/png">
 
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"C++左值右值与移动语义","name":"C++左值右值与移动语义 | zhootoo","description":"左值和右值是理解现代 C++ 性能模型的一把钥匙：它决定了对象会在什么时候被拷贝、什么时候能把资源”偷”过来，也是后续理解完美转发、std::forward 的前置知识。 本文按下面这条线索展开： 什么是左值、什么是右值——回归 C++98 的值类别，并给出一个可操作的判断法则； 为什么要有移动语义——临时对象带来的拷贝冗余，以及编译器优化的能力边界； 移动...","url":"https://zhootoo.github.io/2026/10/20/Cxx%E5%B7%A6%E5%80%BC%E5%8F%B3%E5%80%BC%E4%B8%8E%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89/","inLanguage":"zh-CN","isPartOf":{"@type":"WebSite","name":"zhootoo","url":"https://zhootoo.github.io/"},"mainEntityOfPage":"https://zhootoo.github.io/2026/10/20/Cxx%E5%B7%A6%E5%80%BC%E5%8F%B3%E5%80%BC%E4%B8%8E%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89/","datePublished":"2026-10-20T13:53:36.000Z","dateModified":"2026-10-26T09:52:32.454Z","author":{"@type":"Person","name":"zhootoo"},"publisher":{"@type":"Organization","name":"zhootoo"},"keywords":"C++, 移动语义, 值类别"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"C++左值右值与移动语义","name":"C++左值右值与移动语义 | zhootoo","description":"左值和右值是理解现代 C++ 性能模型的一把钥匙：它决定了对象会在什么时候被拷贝、什么时候能把资源”偷”过来，也是后续理解完美转发、std::forward 的前置知识。 本文按下面这条线索展开： 什么是左值、什么是右值——回归 C++98 的值类别，并给出一个可操作的判断法则 为什么要有移动语义——临时对象带来的拷贝冗余，以及编译器优化的能力边界 移动语义...","url":"https://zhootoo.github.io/2026/10/20/Cxx%E5%B7%A6%E5%80%BC%E5%8F%B3%E5%80%BC%E4%B8%8E%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89/","inLanguage":"zh-CN","isPartOf":{"@type":"WebSite","name":"zhootoo","url":"https://zhootoo.github.io/"},"mainEntityOfPage":"https://zhootoo.github.io/2026/10/20/Cxx%E5%B7%A6%E5%80%BC%E5%8F%B3%E5%80%BC%E4%B8%8E%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89/","datePublished":"2026-10-20T13:53:36.000Z","dateModified":"2026-11-05T08:18:08.480Z","author":{"@type":"Person","name":"zhootoo"},"publisher":{"@type":"Organization","name":"zhootoo"},"keywords":"C++, 移动语义, 值类别"}</script>
 
 <script>
   (function () {
@@ -499,9 +499,9 @@
     <p>左值和右值是理解现代 C++ 性能模型的一把钥匙：它决定了对象会在什么时候被拷贝、什么时候能把资源”偷”过来，也是后续理解完美转发、<code>std::forward</code> 的前置知识。</p>
 <p>本文按下面这条线索展开：</p>
 <ol>
-<li><strong>什么是左值、什么是右值</strong>——回归 C++98 的值类别，并给出一个可操作的判断法则；</li>
-<li><strong>为什么要有移动语义</strong>——临时对象带来的拷贝冗余，以及编译器优化的能力边界；</li>
-<li><strong>移动语义</strong>——右值引用、<code>std::move</code> 与使用时的注意事项；</li>
+<li><strong>什么是左值、什么是右值</strong>——回归 C++98 的值类别，并给出一个可操作的判断法则</li>
+<li><strong>为什么要有移动语义</strong>——临时对象带来的拷贝冗余，以及编译器优化的能力边界</li>
+<li><strong>移动语义</strong>——右值引用、<code>std::move</code> 与使用时的注意事项</li>
 <li><strong>C++11 之后的值类别体系</strong>——把左值&#x2F;右值重新拆分成 <code>lvalue</code> &#x2F; <code>xvalue</code> &#x2F; <code>prvalue</code> 三类。</li>
 </ol>
 <h2 id="一、左值和右值"><a href="#一、左值和右值" class="headerlink" title="一、左值和右值"></a>一、左值和右值</h2><p>左值和右值的概念在 C++98 就已经存在，只是当时标准的表述比较模糊。它是一个<strong>针对表达式</strong>的概念——讨论的不是”变量”，而是”这个表达式算出来的东西”。</p>
