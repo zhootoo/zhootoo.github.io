@@ -7,12 +7,12 @@
 <meta name="theme-color" content="#f7f3e9" data-flatpaper-theme-color>
 
 <title>zhootoo</title>
-<meta name="description" content="zhootoo收录 18 篇文章，包括一个跨平台C++线程池的实现、C++完美转发与引用折叠、C++左值右值与移动语义。">
+<meta name="description" content="zhootoo收录 20 篇文章，包括聊聊 C++ 的 atomic 原子类型、一个跨平台C++线程池的实现、C++完美转发与引用折叠。">
 <meta property="og:type" content="website">
 <meta property="og:title" content="zhootoo">
 <meta property="og:url" content="https://zhootoo.github.io/">
 <meta property="og:site_name" content="zhootoo">
-<meta property="og:description" content="zhootoo收录 18 篇文章，包括一个跨平台C++线程池的实现、C++完美转发与引用折叠、C++左值右值与移动语义。">
+<meta property="og:description" content="zhootoo收录 20 篇文章，包括聊聊 C++ 的 atomic 原子类型、一个跨平台C++线程池的实现、C++完美转发与引用折叠。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:author" content="zhootoo">
 <meta name="twitter:card" content="summary">
@@ -20,7 +20,7 @@
 
 <link rel="icon" href="/images/favicon.png" type="image/png">
 
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Blog","headline":"zhootoo","name":"zhootoo","description":"zhootoo收录 18 篇文章，包括一个跨平台C++线程池的实现、C++完美转发与引用折叠、C++左值右值与移动语义。","url":"https://zhootoo.github.io/","inLanguage":"zh-CN","isPartOf":{"@type":"WebSite","name":"zhootoo","url":"https://zhootoo.github.io/"},"about":"zhootoo"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Blog","headline":"zhootoo","name":"zhootoo","description":"zhootoo收录 20 篇文章，包括聊聊 C++ 的 atomic 原子类型、一个跨平台C++线程池的实现、C++完美转发与引用折叠。","url":"https://zhootoo.github.io/","inLanguage":"zh-CN","isPartOf":{"@type":"WebSite","name":"zhootoo","url":"https://zhootoo.github.io/"},"about":"zhootoo"}</script>
 
 <script>
   (function () {
@@ -484,11 +484,11 @@
         
           <a class="tag-chip tag-chip-1" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
         
-          <a class="tag-chip tag-chip-2" href="/tags/LLM/">LLM</a>
+          <a class="tag-chip tag-chip-2" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">多线程</a>
         
-          <a class="tag-chip tag-chip-3" href="/tags/Linux/">Linux</a>
+          <a class="tag-chip tag-chip-3" href="/tags/LLM/">LLM</a>
         
-          <a class="tag-chip tag-chip-4" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">多线程</a>
+          <a class="tag-chip tag-chip-4" href="/tags/Linux/">Linux</a>
         
           <a class="tag-chip tag-chip-5" href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a>
         
@@ -523,10 +523,51 @@
   <div class="post-list">
     
       
+<article class="post-card" data-title="聊聊 C++ 的 atomic 原子类型">
+  <a class="post-thumb-link" href="/2026/11/02/%E8%81%8A%E8%81%8Aatomic%E5%8E%9F%E5%AD%90%E7%B1%BB%E5%9E%8B/" aria-label="聊聊 C++ 的 atomic 原子类型">
+    
+<div class="paper-thumb paper-thumb-0 paper-thumb--cover">
+  
+    <img class="paper-thumb__img" src="/images/cover/camera.webp" alt="" loading="lazy" referrerpolicy="no-referrer">
+  
+</div>
+
+  </a>
+  <div class="post-card-copy">
+    <h3><a href="/2026/11/02/%E8%81%8A%E8%81%8Aatomic%E5%8E%9F%E5%AD%90%E7%B1%BB%E5%9E%8B/">聊聊 C++ 的 atomic 原子类型</a></h3>
+    <p>多线程碰到共享数据，大家条件反射就是 std::mutex 加锁。这当然没错，但有时候会觉得杀鸡用牛刀——一个全局计数器，两个线程各累加一百万次，就这么点事，每次自增都 lock&amp;#x2F;u...</p>
+    
+      <div class="meta-line meta-line--tags">
+        <span class="meta-tags">
+          
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tag flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-tag"></use></svg>
+
+          <a class="meta-tag-link" href="/tags/C/">#C++</a><a class="meta-tag-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">#多线程</a><a class="meta-tag-link" href="/tags/%E5%8E%9F%E5%AD%90%E7%B1%BB%E5%9E%8B/">#原子类型</a>
+        </span>
+      </div>
+    
+    <div class="meta-line meta-line--tax">
+      <span class="meta-date">
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-calendar"></use></svg>
+2026-11-02</span>
+      
+        <span class="meta-cat">
+          
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-folder"></use></svg>
+
+          <a class="meta-cat-link" href="/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">多线程</a>
+        </span>
+      
+    </div>
+  </div>
+</article>
+
+    
+      
 <article class="post-card" data-title="一个跨平台C++线程池的实现">
   <a class="post-thumb-link" href="/2026/10/31/%E4%B8%80%E4%B8%AA%E8%B7%A8%E5%B9%B3%E5%8F%B0C++%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E5%AE%9E%E7%8E%B0/" aria-label="一个跨平台C++线程池的实现">
     
-<div class="paper-thumb paper-thumb-0 paper-thumb--cover">
+<div class="paper-thumb paper-thumb-1 paper-thumb--cover">
   
     <img class="paper-thumb__img" src="/2026/10/31/%E4%B8%80%E4%B8%AA%E8%B7%A8%E5%B9%B3%E5%8F%B0C++%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E5%AE%9E%E7%8E%B0/1.png" alt="一个跨平台C++线程池的实现" loading="lazy" referrerpolicy="no-referrer">
   
@@ -567,9 +608,9 @@
 <article class="post-card" data-title="C++完美转发与引用折叠">
   <a class="post-thumb-link" href="/2026/10/24/Cxx%E5%AE%8C%E7%BE%8E%E8%BD%AC%E5%8F%91/" aria-label="C++完美转发与引用折叠">
     
-<div class="paper-thumb paper-thumb-1 paper-thumb--cover">
+<div class="paper-thumb paper-thumb-2 paper-thumb--cover">
   
-    <img class="paper-thumb__img" src="/images/cover/mountain.webp" alt="" loading="lazy" referrerpolicy="no-referrer">
+    <img class="paper-thumb__img" src="/images/cover/notebook.webp" alt="" loading="lazy" referrerpolicy="no-referrer">
   
 </div>
 
@@ -608,7 +649,7 @@
 <article class="post-card" data-title="C++左值右值与移动语义">
   <a class="post-thumb-link" href="/2026/10/20/Cxx%E5%B7%A6%E5%80%BC%E5%8F%B3%E5%80%BC%E4%B8%8E%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89/" aria-label="C++左值右值与移动语义">
     
-<div class="paper-thumb paper-thumb-2 paper-thumb--cover">
+<div class="paper-thumb paper-thumb-0 paper-thumb--cover">
   
     <img class="paper-thumb__img" src="/2026/10/20/Cxx%E5%B7%A6%E5%80%BC%E5%8F%B3%E5%80%BC%E4%B8%8E%E7%A7%BB%E5%8A%A8%E8%AF%AD%E4%B9%89/1.png" alt="C++左值右值与移动语义" loading="lazy" referrerpolicy="no-referrer">
   
@@ -649,9 +690,9 @@
 <article class="post-card" data-title="C++多线程In Practice">
   <a class="post-thumb-link" href="/2026/10/15/C-%E5%A4%9A%E7%BA%BF%E7%A8%8BIn-Practice/" aria-label="C++多线程In Practice">
     
-<div class="paper-thumb paper-thumb-0 paper-thumb--cover">
+<div class="paper-thumb paper-thumb-1 paper-thumb--cover">
   
-    <img class="paper-thumb__img" src="/images/cover/port.webp" alt="" loading="lazy" referrerpolicy="no-referrer">
+    <img class="paper-thumb__img" src="/images/cover/snowman.webp" alt="" loading="lazy" referrerpolicy="no-referrer">
   
 </div>
 
@@ -690,9 +731,9 @@
 <article class="post-card" data-title="一个多线程安全的通用订阅发布框架的实现">
   <a class="post-thumb-link" href="/2026/10/05/%E4%B8%80%E4%B8%AA%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84%E9%80%9A%E7%94%A8%E8%AE%A2%E9%98%85%E5%8F%91%E5%B8%83%E6%A1%86%E6%9E%B6%E7%9A%84%E5%AE%9E%E7%8E%B0/" aria-label="一个多线程安全的通用订阅发布框架的实现">
     
-<div class="paper-thumb paper-thumb-1 paper-thumb--cover">
+<div class="paper-thumb paper-thumb-2 paper-thumb--cover">
   
-    <img class="paper-thumb__img" src="/images/cover/snowman.webp" alt="" loading="lazy" referrerpolicy="no-referrer">
+    <img class="paper-thumb__img" src="/images/cover/camera.webp" alt="" loading="lazy" referrerpolicy="no-referrer">
   
 </div>
 
@@ -731,9 +772,9 @@
 <article class="post-card" data-title="了解C++协程">
   <a class="post-thumb-link" href="/2026/10/01/C%E5%8D%8F%E7%A8%8B/" aria-label="了解C++协程">
     
-<div class="paper-thumb paper-thumb-2 paper-thumb--cover">
+<div class="paper-thumb paper-thumb-0 paper-thumb--cover">
   
-    <img class="paper-thumb__img" src="/images/cover/camera.webp" alt="" loading="lazy" referrerpolicy="no-referrer">
+    <img class="paper-thumb__img" src="/images/cover/mountain.webp" alt="" loading="lazy" referrerpolicy="no-referrer">
   
 </div>
 
@@ -772,9 +813,9 @@
 <article class="post-card" data-title="深入理解STL容器">
   <a class="post-thumb-link" href="/2026/09/26/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3STL%E5%AE%B9%E5%99%A8/" aria-label="深入理解STL容器">
     
-<div class="paper-thumb paper-thumb-0 paper-thumb--cover">
+<div class="paper-thumb paper-thumb-1 paper-thumb--cover">
   
-    <img class="paper-thumb__img" src="/images/cover/mountain.webp" alt="" loading="lazy" referrerpolicy="no-referrer">
+    <img class="paper-thumb__img" src="/images/cover/notebook.webp" alt="" loading="lazy" referrerpolicy="no-referrer">
   
 </div>
 
@@ -813,7 +854,7 @@
 <article class="post-card" data-title="浅谈Transformer">
   <a class="post-thumb-link" href="/2026/09/20/%E6%B5%85%E8%B0%88Transformer/" aria-label="浅谈Transformer">
     
-<div class="paper-thumb paper-thumb-1 paper-thumb--cover">
+<div class="paper-thumb paper-thumb-2 paper-thumb--cover">
   
     <img class="paper-thumb__img" src="/2026/09/20/%E6%B5%85%E8%B0%88Transformer/1.png" alt="浅谈Transformer" loading="lazy" referrerpolicy="no-referrer">
   
@@ -854,7 +895,7 @@
 <article class="post-card" data-title="PyTorch OverView">
   <a class="post-thumb-link" href="/2026/08/26/PyTorch%20OverView/" aria-label="PyTorch OverView">
     
-<div class="paper-thumb paper-thumb-2 paper-thumb--cover">
+<div class="paper-thumb paper-thumb-0 paper-thumb--cover">
   
     <img class="paper-thumb__img" src="/2026/08/26/PyTorch%20OverView/pytorch.png" alt="PyTorch OverView" loading="lazy" referrerpolicy="no-referrer">
   
@@ -884,47 +925,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-folder"></use></svg>
 
           <a class="meta-cat-link" href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a>
-        </span>
-      
-    </div>
-  </div>
-</article>
-
-    
-      
-<article class="post-card" data-title="详解CPP内存布局">
-  <a class="post-thumb-link" href="/2026/08/21/%E8%AF%A6%E8%A7%A3CPP%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80/" aria-label="详解CPP内存布局">
-    
-<div class="paper-thumb paper-thumb-0 paper-thumb--cover">
-  
-    <img class="paper-thumb__img" src="/2026/08/21/%E8%AF%A6%E8%A7%A3CPP%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80/1.png" alt="详解CPP内存布局" loading="lazy" referrerpolicy="no-referrer">
-  
-</div>
-
-  </a>
-  <div class="post-card-copy">
-    <h3><a href="/2026/08/21/%E8%AF%A6%E8%A7%A3CPP%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80/">详解CPP内存布局</a></h3>
-    <p>程序运行时所“看到”的内存，并不是物理内存的原始模样，而是由操作系统、编译器和链接器共同规划出的一套虚拟地址空间。理解这套布局，是写出高效、安全 C++ 代码的基础——它解释了变量为什么会被放...</p>
-    
-      <div class="meta-line meta-line--tags">
-        <span class="meta-tags">
-          
-<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tag flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-tag"></use></svg>
-
-          <a class="meta-tag-link" href="/tags/C/">#C++</a><a class="meta-tag-link" href="/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">#编程语言</a>
-        </span>
-      </div>
-    
-    <div class="meta-line meta-line--tax">
-      <span class="meta-date">
-<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-calendar"></use></svg>
-2026-08-21</span>
-      
-        <span class="meta-cat">
-          
-<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder flatpaper-icon flatpaper-icon--lucide" aria-hidden="true"><use href="/icons.svg#flatpaper-icon-lucide-folder"></use></svg>
-
-          <a class="meta-cat-link" href="/categories/C/">C++</a>
         </span>
       
     </div>
@@ -994,6 +994,13 @@
     <ul class="recent-list js-random-posts">
       
         <li>
+          <a class="recent-item" href="/2026/11/02/%E8%81%8A%E8%81%8Aatomic%E5%8E%9F%E5%AD%90%E7%B1%BB%E5%9E%8B/">
+            <strong>聊聊 C++ 的 atomic 原子类型</strong>
+            <em>2026-11-02</em>
+          </a>
+        </li>
+      
+        <li>
           <a class="recent-item" href="/2026/10/31/%E4%B8%80%E4%B8%AA%E8%B7%A8%E5%B9%B3%E5%8F%B0C++%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E5%AE%9E%E7%8E%B0/">
             <strong>一个跨平台C++线程池的实现</strong>
             <em>2026-10-31</em>
@@ -1018,13 +1025,6 @@
           <a class="recent-item" href="/2026/10/15/C-%E5%A4%9A%E7%BA%BF%E7%A8%8BIn-Practice/">
             <strong>C++多线程In Practice</strong>
             <em>2026-10-15</em>
-          </a>
-        </li>
-      
-        <li>
-          <a class="recent-item" href="/2026/10/05/%E4%B8%80%E4%B8%AA%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84%E9%80%9A%E7%94%A8%E8%AE%A2%E9%98%85%E5%8F%91%E5%B8%83%E6%A1%86%E6%9E%B6%E7%9A%84%E5%AE%9E%E7%8E%B0/">
-            <strong>一个多线程安全的通用订阅发布框架的实现</strong>
-            <em>2026-10-05</em>
           </a>
         </li>
       
